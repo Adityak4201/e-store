@@ -7,18 +7,8 @@ const path = require('path');
 
 
 router.get("/", async (req, res) => {
-    try {
+    res.send({ msg: "Get Your profile" });
 
-        // const test = new Profile({ username: 'test name' });
-        // test.save(function (err) {
-        // if (err) return handleError(err);
-        // // saved!
-        // });
-        res.send({msg : "profile routes"})
-    } catch (error) {
-        res.status(403).send(error)
-        console.log(error)
-    }
 });
 
 

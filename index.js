@@ -38,20 +38,6 @@ const profilerouter = require('./routes/profile')
 app.use('/user', userrouter);
 app.use('/profile',profilerouter);
 
-// const adminrouter = require('./routes/admin')
-// const adminpanelrouter = require('./routes/adminpanel')
-
-// const userrouter = require('./routes/user')
-// const blogrouter = require('./routes/blog')
-// const profilerouter = require('./routes/profile')
-// const clubrouter = require('./routes/club')
-// const eventrouter = require('./routes/event')
-// app.use('/admin', adminrouter)
-// app.use('/adminpanel', adminpanelrouter)
-// app.use('/blog',blogrouter);
-// app.use('/profile',profilerouter);
-// app.use('/club',clubrouter);
-// app.use('/event',eventrouter);
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 

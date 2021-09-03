@@ -8,22 +8,8 @@ const { OAuth2Client } = require("google-auth-library");
 
 const router = express.Router();
 router.get("/", async (req, res) => {
-  try {
-    const test = new USER({
-      username: "test user",
-      email: "test@gmail.com",
-      password: "1234567890",
-    });
-    let token = await test.generateAuthToken();
-    test.save(function (err, response) {
-      if (err) console.log(err);
-      res.send({ msg: response, jwt_token: token });
-      // saved!
-    });
-  } catch (error) {
-    res.status(403).send(error);
-    console.log(error);
-  }
+  res.send({ msg: "Welcome user" });
+
 });
 
 router.get("/getUser/:id", async (req, res) => {
