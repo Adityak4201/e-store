@@ -38,11 +38,15 @@ check(
     try {
         const username = req.body.username;
         const password = req.body.password;
+        var givenroll = "basic";
+        if(req.body.roll != undefined){
+            givenroll = req.body.roll
+        }
         const userfind = await USER.findOne({ username: username });
         if (userfind) {
             let ismatch = await bcrypt.compare(password, userfind.password);
             if (ismatch) {
-                let token = await userfind.generateAuthToken();
+                let token = await userfind.generateAuthToken(givenroll);
                 console.log(token);
                 res.send({ token })
             }
@@ -65,9 +69,6 @@ router
   .post(
     [
       check("username", "Name is required").notEmpty(),
-      check("country", "Country is required").notEmpty(),
-      check("state", "State is required").notEmpty(),
-      check("city", "City is required").notEmpty(),
       check("email", "Please include a valid email").isEmail(),
       check(
         "password",
@@ -84,16 +85,18 @@ router
 
         const password = req.body.password;
         const cpassword = req.body.confpassword;
+        var givenroll = "basic";
+        if(req.body.roll != undefined){
+            givenroll = req.body.roll
+        }
         if (password === cpassword) {
           const userdata = new USER({
+            roll : givenroll,
             username: req.body.username,
             email: req.body.email,
             password: req.body.password,
-            country: req.body.country,
-            state: req.body.state,
-            city: req.body.city,
           });
-          let token = await userdata.generateAuthToken();
+          let token = await userdata.generateAuthToken(givenroll);
           await userdata
             .save()
             .then(() => {

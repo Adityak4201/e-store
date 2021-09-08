@@ -10,7 +10,7 @@ const userschema = mongoose.Schema;
 const user = userschema({
     roll: {
         type: String,
-        default: "user"
+        default: "basic"
     },
     username: {
         type: String,
@@ -35,24 +35,14 @@ const user = userschema({
     confpassword: {
         type: String,
     },
-    country: {
-        type: String,
-    },
-    state: {
-        type: String,
-    },
-    city: {
-        type: String,
-    }
-
 });
 
 
 
-user.methods.generateAuthToken = async function () {
+user.methods.generateAuthToken = async function (givenroll) {
     try {
 
-        const token = jwt.sign({ _id: this._id.toString() }, config.key)
+        const token = jwt.sign({ _id: this._id.toString() , roll : givenroll }, config.key)
         await this.save();
         console.log("user jwt token is : ", token)
         return token;

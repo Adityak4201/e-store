@@ -34,9 +34,13 @@ app.get("/",(req,res)=>{
 
 const userrouter = require('./routes/user')
 const profilerouter = require('./routes/profile')
+const sellerrouter = require('./routes/sellerprofile')
+const product = require('./routes/product')
 
 app.use('/user', userrouter);
 app.use('/profile',profilerouter);
+app.use('/sellerprofile',sellerrouter);
+app.use('/products',product);
 
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));

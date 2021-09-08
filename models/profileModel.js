@@ -1,30 +1,37 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const Profile = Schema({
+  profileimg: {
+    type: String,
+    default: "",
+  },
+  username: {
+    type: String,
+  },
+  phone :{
+    type: String,
+  },
+  address: { type: Array, default: [] },
+  about: {
+    type: String,
+  },
+  dob: {
+    type: Date,
+  },
+  country: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
 
-    profileimg:{
-        type: String,
-        default:""
-    },
-    username:{
-        type: String
-    },
-    address:{
-        type: String
-    },
-    about:{
-        type: String
-    },
-    dob:{
-        type: Date
-    },
+  cart: { type: Array, default: [] },
+  items: { type: Array, default: [] },
+  noti: { type: Array, default: [] },
+});
 
-    cart:{ type : Array , "default" : [] },
-    items:{ type : Array , "default" : [] },
-    noti:{ type : Array , "default" : [] },
-
-})
-
-
-module.exports=mongoose.model("Profile",Profile);
+module.exports = mongoose.model("Profile", Profile);

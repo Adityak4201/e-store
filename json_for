@@ -1,0 +1,31 @@
+{
+    "roll" : "admin",
+    "username" : "piyush123",
+    "password" : "123456",
+    "confpassword" : "123456",
+    "email" : "tester123@gmail.com"
+},
+
+// profile of user
+{
+    "username": "piyush",
+    "addressType" : "home",
+    "address": "police line gzb",
+    "about": "this is just a test",
+    "dob": "09-10-2001",
+    "country": "India",
+    "state": "Uttar Pradesh",
+    "city": "Ghaziabad"
+}
+
+// product add
+{
+    "productname": "underwear",
+    "productmetadescription": "productetadescription",
+    "productdescription": "productdescription",
+    "price": 100,
+    "sellprice": 90,
+    "variation": ["80", "90", "100"],
+    "inventory": 10,
+    "Item_Returnable": 10
+}
