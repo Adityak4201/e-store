@@ -50,8 +50,6 @@ app.use("/sellerproduct/", sellerproduct);
 app.use("/visitor", visitorrouter);
 app.use("/invoice", invoiceRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 app.listen(port, () => {
   console.log(`connected to the port ${port}`);

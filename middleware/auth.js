@@ -7,7 +7,10 @@ const auth = async (req, res, next) => {
     const token = req.header("x-auth-token");
     // console.log("x-auth-token", token);
     const verifyuser = jwt.verify(token, config.key);
+<<<<<<< HEAD
     console.log("verifyuser", verifyuser);
+=======
+>>>>>>> 8788c42 (AddToCart and RemoveFromCart route added)
     console.log("roll", verifyuser.roll, "id", verifyuser._id);
 
     const user = await Register.findOne({
@@ -18,6 +21,7 @@ const auth = async (req, res, next) => {
     req.token = token;
     req.user = user;
     if (user != null) {
+<<<<<<< HEAD
       if (user.status !== "approved")
         return res
           .status(406)
@@ -25,11 +29,19 @@ const auth = async (req, res, next) => {
       next();
     } else {
       return res.status(401).json({ error: "no such user" });
+=======
+      next();
+    } else {
+      res.status(401).send("no such user");
+>>>>>>> 8788c42 (AddToCart and RemoveFromCart route added)
     }
   } catch (error) {
     res.status(401).send(error);
     console.log(error);
   }
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8788c42 (AddToCart and RemoveFromCart route added)
 module.exports = auth;
