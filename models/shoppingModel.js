@@ -1,58 +1,62 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const Seller_Profile = Schema({
+const ShopProduct = Schema({
   ordertype: {
     type: String,
-    required:true
-
+    required: true,
+  },
+  productdetails: {
+    type: Array,
+    default: [],
+    required: true,
   },
   sellerid: {
     type: String,
-    required:true
-
+    required: true,
   },
   buyerid: {
     type: String,
-    required:true
-
+    required: true,
   },
   buyername: {
     type: String,
-    required:true
-
+    required: true,
   },
   buyeraddress: {
     type: String,
   },
   buyerphone: {
     type: String,
-    required:true
-
+    required: true,
   },
   paymentmethod: {
     type: Array,
-    default : [],
-    required:true
-
+    default: [],
+    required: true,
   },
   subtotal: {
-    type: number,
-    required:true
-
+    type: Number,
+    required: true,
   },
   shippingcost: {
-    type: number,
-    required:true
+    type: Number,
+    required: true,
   },
   date: {
     type: Date,
     default: Date.now,
   },
   status: {
-    type: string,
+    type: String,
     default: "ordered",
+  },
+
+  trackorder: {
+    type: Array,
+    default: [],
+    required: true,
   },
 });
 
-module.exports = mongoose.model("Seller_Profile", Seller_Profile);
+module.exports = mongoose.model("ShopProduct", ShopProduct);

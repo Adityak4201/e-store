@@ -29,3 +29,17 @@
     "inventory": 10,
     "Item_Returnable": 10
 }
+
+
+// buy item 
+
+{
+    "ordertype":  "home delivery",
+    "productdetails" : [{"_id" : "613460e0dd663e2ac4a92815" , "count" : 2}, {"_id" : "61347d0bac9e820694445ca6" , "count" : 1}],
+    "sellerid": "61331a7e8e960067fc44053c",
+    "buyeraddress": "police line gzb",
+    "buyerphone": "1234567890",
+    "paymentmethod": "visa *********60",
+    "subtotal": 100,
+    "shippingcost": 20
+  }

@@ -4,6 +4,8 @@ const router = express.Router();
 const Product = require("../models/productModel");
 const Profile = require("../models/sellerModel");
 const USERProfile = require("../models/profileModel");
+const ShopProduct = require("../models/shoppingModel");
+
 const auth = require("../middleware/auth");
 const fs = require("fs");
 const path = require("path");
@@ -256,6 +258,33 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(402).send({ error });
+  }
+});
+
+router.route("/buyProduct").post(auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res
+      .status(404)
+      .send({ msg: "Login as customer to buy products to cart" });
+  }
+  
+
+  try {
+    const Buy_Item = ShopProduct({
+      buyerid : req.user._id,
+      buyername : req.user.username,
+      ...req.body,
+    });
+
+    Buy_Item.save()
+      .then((result) => {
+        res.json({ data: result });
+      })
+      .catch((err) => {
+        console.log(err), res.json({ err: err });
+      });
+  } catch (error) {
+    console.log(error);
   }
 });
 
