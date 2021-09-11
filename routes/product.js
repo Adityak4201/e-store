@@ -66,17 +66,27 @@ router.route("/Add").post(auth, (req, res) => {
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
   }
+  const {
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+  } = req.body;
   const Item = Product({
-    username: req.user.username,
-    user_id: req.user._id,
-    productname: req.body.productname,
-    productmetadescription: req.body.productmetadescription,
-    productdescription: req.body.productdescription,
-    price: req.body.price,
-    sellprice: req.body.sellprice,
-    variation: req.body.variation,
-    inventory: req.body.inventory,
-    Item_Returnable: req.body.Item_Returnable,
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
   });
   Item.save()
     .then((result) => {
