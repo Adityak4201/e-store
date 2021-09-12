@@ -68,26 +68,60 @@ router.route("/add").post(auth, (req, res) => {
       .send({ msg: "You can't add profile create a seller account" });
   }
 
-  BlogPost.findOneAndUpdate(
-    { _id: req.body.id },
-    {
-      $set: {
-        catagory: req.body.catagory,
-        title: req.body.title,
-        subheading: req.body.subheading,
-        tags: req.body.tags,
-        body: req.body.body,
-        url: req.body.url,
-      },
-    },
-    { new: true },
-    (err, result) => {
-      if (err) {
-        console.log(err)
+
+  const profiledata = Profile({
+    username: req.user.username,
+    ...req.body
+  });
+  profiledata
+    .save()
+    .then((result) => {
+      res.json({ result });
+    })
+    .catch((err) => {
+      console.log(err), res.json({ err });
+    });
+});
+
+
+router.route("/getAllMessages/").get(auth, (req, res) => {
+
+  if (req.user.roll != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add profile create a seller account" });
+  }
+
+
+  Profile.find({ username: req.user.username }, "message", (err, result) => {
+    if (err) return res.status(403).send(err);
+    return res.json(result);
+  });
+});
+
+router.route("/getUserMessage/:username").get(auth, (req, res) => {
+
+  if (req.user.roll != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "create a seller account" });
+  }
+
+  var paramsUsername = req.params.username;
+
+  var messages = {};
+  Profile.find({ username: req.user.username }, "message", (err, result) => {
+    if (err) return res.status(403).send(err);
+
+    var i = 0;
+    for(x in result[0]["message"]){
+      if(result[0]["message"][x]["by"] == paramsUsername || result[0]["message"][x]["to"] == paramsUsername){
+        messages[i] = result[0]["message"][x]
+        i++;
       }
-      return res.json(result);
     }
-  );
+    return res.json(messages);
+  });
 });
 
 

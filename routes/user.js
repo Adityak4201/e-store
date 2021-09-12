@@ -118,4 +118,13 @@ router
   );
 
 
+  router.route("/getAccType/:username").get((req, res) => {
+    USER.findOne({ username: req.params.username }, "roll", (err, result) => {
+      if (err) return res.status(403).send(err);
+      return res.json(result);
+    }).select( "-_id");
+  });
+  
+
+
 module.exports = router;

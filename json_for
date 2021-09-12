@@ -18,6 +18,21 @@
     "city": "Ghaziabad"
 }
 
+
+//profile of admin
+
+{
+    "bussiness_name" : "golden kirana",
+    "bussiness_category" : "gold seller",
+    "phone" :"1234567890",
+    "address": { "type" : "home" , "address" :"police line gzb"},
+    "about": "this is just a test",
+    "dob": "09-10-2001",
+    "country": "India",
+    "state": "Uttar Pradesh",
+    "city": "Ghaziabad"
+}
+
 // product add
 {
     "productname": "underwear",

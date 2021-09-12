@@ -20,7 +20,9 @@ const Seller_Profile = Schema({
         type: String
     },
     phone:{
-        type: Number
+        type: Number,
+        required: true,
+
     },
     address:{ type : Array , "default" : [] },
     country: {
@@ -35,6 +37,7 @@ const Seller_Profile = Schema({
     about:{
         type: String
     },
+    message:{type : Array , "default" : []},
 
     noti:{ type : Array , "default" : [] },
 
