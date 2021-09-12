@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Profile = require("../models/profileModel");
+const SellerProfile = require("../models/sellerModel");
+
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
@@ -34,9 +36,10 @@ const upload = multer({
 router
   .route("/add/image")
   .patch(auth, upload.single("profileimg"), (req, res) => {
-
-    if(req.user.roll != "basic"){
-        return res.status(404).send({msg : "You can't add profile create a basic account"});
+    if (req.user.roll != "basic") {
+      return res
+        .status(404)
+        .send({ msg: "You can't add profile create a basic account" });
     }
     Profile.findOneAndUpdate(
       { username: req.user.username },
@@ -58,19 +61,19 @@ router
   });
 
 router.route("/add").post(auth, (req, res) => {
+  if (req.user.roll != "basic") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add profile create a basic account" });
+  }
 
-    if(req.user.roll != "basic"){
-        return res.status(404).send({msg : "You can't add profile create a basic account"});
-    }
-
-    
-    var address = {
-      "Type" : req.body.addressType,
-      "Address " : req.body.address
-    }
+  var address = {
+    Type: req.body.addressType,
+    "Address ": req.body.address,
+  };
 
   const profiledata = Profile({
-    username: req.body.username,
+    username: req.user.username,
     address: address,
     about: req.user.about,
     dob: req.body.dob,
@@ -88,7 +91,6 @@ router.route("/add").post(auth, (req, res) => {
     });
 });
 
-
 router.route("/editAddress").post(auth, (req, res) => {
   if (req.user.roll != "basic") {
     return res
@@ -100,7 +102,7 @@ router.route("/editAddress").post(auth, (req, res) => {
     { _id: req.user._id },
     {
       $set: {
-        address : req.body.address
+        address: req.body.address,
       },
     },
     { new: true },
@@ -113,5 +115,62 @@ router.route("/editAddress").post(auth, (req, res) => {
   );
 });
 
+router.route("/getSellersCategory").get(auth, (req, res) => {
+  try {
+    SellerProfile.find({}, "bussiness_category", function (err, result) {
+      if (err) return res.status(403).send(err);
+      return res.json(result);
+    }).distinct("bussiness_category");
+  } catch (error) {
+    console.log(err), res.json({ err: err });
+  }
+});
+
+router.route("/filterBySellerCategory").get(auth, (req, res) => {
+  const categories = req.body.categories;
+  try {
+    SellerProfile.find(
+      { bussiness_category: { $in: categories } },
+      "_id bussiness_category",
+      function (err, result) {
+        if (err) return res.status(403).send(err);
+        return res.json(result);
+      }
+    );
+  } catch (err) {
+    console.log(err), res.json({ err: err });
+  }
+});
+
+router.route("/message").post(auth, (req, res) => {
+  try {
+
+    const sentDate = new Date();
+
+    const sentMessage = {
+      by : req.user.username,
+      to : req.body.message_to,
+      message : req.body.message,
+      time : sentDate,
+    }
+    SellerProfile.findOneAndUpdate(
+      { username: req.body.message_to},
+      {
+        $push: { message : sentMessage },
+      },
+      { new: true },
+      (err, profile) => {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: " added successfully updated",
+          data: profile,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  } catch (err) {
+    console.log(err), res.json({ err: err });
+  }
+});
 
 module.exports = router;

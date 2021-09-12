@@ -9,7 +9,7 @@ const app = express();
 app.use(cookieParser());
 app.use(cors());
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/magi2", {
+mongoose.connect("mongodb+srv://piyush:piyush2001@magi2.k3zwz.mongodb.net/test", {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,

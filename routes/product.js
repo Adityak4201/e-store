@@ -126,34 +126,6 @@ router.route("/getOtherProduct").get(auth, (req, res) => {
   });
 });
 
-// router.route("/AddToCart").get(auth, async (req, res) => {
-//   try {
-//     let AddToCartid = [];
-//     await Profile.find({ username: req.user.username }, async (err, result) => {
-//       try {
-//         if (err) {
-//           AddToCartid = [];
-//         }
-//         if (result != null) {
-//           AddToCartid = result[0]._id;
-//         }
-//         const AddToCartpost = await USERProfile.find({
-//           _id: req.user._id },
-//           {
-//             $in: {
-//               cart: AddToCartid,
-//             },
-//           },
-//         );
-//         res.send(AddToCartpost);
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
 
 router.route("/AddToCart").post(auth, async (req, res) => {
   if (req.user.roll != "basic") {
