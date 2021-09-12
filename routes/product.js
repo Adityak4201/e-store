@@ -66,17 +66,29 @@ router.route("/Add").post(auth, (req, res) => {
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
   }
+  console.log(req.user);
+  console.log(req.body);
+  const {
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+  } = req.body;
   const Item = Product({
-    username: req.user.username,
-    user_id: req.user._id,
-    productname: req.body.productname,
-    productmetadescription: req.body.productmetadescription,
-    productdescription: req.body.productdescription,
-    price: req.body.price,
-    sellprice: req.body.sellprice,
-    variation: req.body.variation,
-    inventory: req.body.inventory,
-    Item_Returnable: req.body.Item_Returnable,
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
   });
   Item.save()
     .then((result) => {
@@ -201,7 +213,7 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
   if (req.user.roll != "basic") {
     return res
       .status(404)
-      .send({ msg: "Login as customer to add products to cart" });
+      .send({ msg: "Login as customer to remove products to cart" });
   }
   try {
     const { product_id, count } = req.body;
@@ -239,12 +251,11 @@ router.route("/buyProduct").post(auth, async (req, res) => {
       .status(404)
       .send({ msg: "Login as customer to buy products to cart" });
   }
-  
 
   try {
     const Buy_Item = ShopProduct({
-      buyerid : req.user._id,
-      buyername : req.user.username,
+      buyerid: req.user._id,
+      buyername: req.user.username,
       ...req.body,
     });
 
@@ -257,6 +268,22 @@ router.route("/buyProduct").post(auth, async (req, res) => {
       });
   } catch (error) {
     console.log(error);
+  }
+});
+
+router.route("/filterProductByCategory").post(auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res
+      .status(404)
+      .send({ msg: "Login as customer to see products by category" });
+  }
+  try {
+    const { category } = req.body;
+    const productsByCategory = await Product.find({ category });
+    if (productsByCategory.length === 0) throw "No Products of this Category";
+    return res.json({ productsByCategory });
+  } catch (e) {
+    return res.status(402).send({ error: e });
   }
 });
 
