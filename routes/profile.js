@@ -178,7 +178,7 @@ router.post("/addShopReview", auth, async (req, res) => {
   try {
     const { username } = req.user;
     const { shop_id, ratings, comments } = req.body;
-    const query = { _id: shop_id, "reviews.username": username };
+    const query = { _id: shop_id };
     const update = {
       $addToSet: {
         reviews: {
@@ -202,6 +202,20 @@ router.post("/addShopReview", auth, async (req, res) => {
         return res.status(200).send(response);
       }
     );
+  } catch (error) {
+    return res.status(402).json({ error });
+  }
+});
+
+router.post("/getRatings", async (req, res) => {
+  try {
+    const { shop_id } = req.body;
+    const shop = await SellerProfile.findOne({ _id: shop_id });
+    const length = shop.reviews.length;
+    if (length === 0) res.json({ msg: "No Reviews" });
+    const avg_reviews =
+      shop.reviews.reduce((prev, curr) => prev + curr.ratings, 0) / length;
+    res.json({ avg_reviews, length });
   } catch (error) {
     return res.status(402).json({ error });
   }
