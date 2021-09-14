@@ -33,7 +33,7 @@ const Product = Schema({
     type: Number,
   },
   Item_Returnable: { type: Number },
-  comments: { type: Array, default: [] },
+  reviews: { type: Array, default: [] },
 });
 
 module.exports = mongoose.model("Product", Product);

@@ -66,8 +66,9 @@ router.route("/Add").post(auth, (req, res) => {
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
   }
-  console.log(req.user);
-  console.log(req.body);
+  // console.log(req.user);
+  // console.log(req.body);
+  const { username } = req.user;
   const {
     productname,
     productmetadescription,
@@ -81,6 +82,7 @@ router.route("/Add").post(auth, (req, res) => {
   } = req.body;
   const Item = Product({
     productname,
+    username,
     productmetadescription,
     productdescription,
     price,
@@ -137,7 +139,6 @@ router.route("/getOtherProduct").get(auth, (req, res) => {
     return res.json({ data: result });
   });
 });
-
 
 router.route("/AddToCart").post(auth, async (req, res) => {
   if (req.user.roll != "basic") {
@@ -213,7 +214,7 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
   if (req.user.roll != "basic") {
     return res
       .status(404)
-      .send({ msg: "Login as customer to remove products to cart" });
+      .send({ msg: "Login as customer to remove products from cart" });
   }
   try {
     const { product_id, count } = req.body;
@@ -284,6 +285,37 @@ router.route("/filterProductByCategory").post(auth, async (req, res) => {
     return res.json({ productsByCategory });
   } catch (e) {
     return res.status(402).send({ error: e });
+  }
+});
+
+router.post("/addProductReview", auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res.status(404).send({ msg: "Login as customer to give a review" });
+  }
+  try {
+    const { username } = req.user;
+    const { product_id, ratings, comments } = req.body;
+    const query = { _id: product_id };
+    const update = {
+      $addToSet: {
+        reviews: {
+          username,
+          ratings,
+          comments,
+        },
+      },
+    };
+    const options = { new: true, upsert: true };
+    await Product.findOneAndUpdate(query, update, options, (err, product) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "Product Review added",
+        data: product,
+      };
+      return res.status(200).send(response);
+    });
+  } catch (error) {
+    return res.status(402).json({ error });
   }
 });
 
