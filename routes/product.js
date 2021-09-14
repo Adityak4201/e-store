@@ -319,4 +319,18 @@ router.post("/addProductReview", auth, async (req, res) => {
   }
 });
 
+router.post("/getRatings", async (req, res) => {
+  try {
+    const { product_id } = req.body;
+    const product = await Product.findOne({ _id: product_id });
+    const length = product.reviews.length;
+    if (length === 0) res.json({ msg: "No Reviews" });
+    const avg_reviews =
+      product.reviews.reduce((prev, curr) => prev + curr.ratings, 0) / length;
+    res.json({ avg_reviews, length });
+  } catch (error) {
+    return res.status(402).json({ error });
+  }
+});
+
 module.exports = router;
