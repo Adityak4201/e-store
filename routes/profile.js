@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Profile = require("../models/profileModel");
 const SellerProfile = require("../models/sellerModel");
-
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
@@ -144,19 +143,18 @@ router.route("/filterBySellerCategory").get(auth, (req, res) => {
 
 router.route("/message").post(auth, (req, res) => {
   try {
-
     const sentDate = new Date();
 
     const sentMessage = {
-      by : req.user.username,
-      to : req.body.message_to,
-      message : req.body.message,
-      time : sentDate,
-    }
+      by: req.user.username,
+      to: req.body.message_to,
+      message: req.body.message,
+      time: sentDate,
+    };
     SellerProfile.findOneAndUpdate(
-      { username: req.body.message_to},
+      { username: req.body.message_to },
       {
-        $push: { message : sentMessage },
+        $push: { message: sentMessage },
       },
       { new: true },
       (err, profile) => {
@@ -170,6 +168,42 @@ router.route("/message").post(auth, (req, res) => {
     );
   } catch (err) {
     console.log(err), res.json({ err: err });
+  }
+});
+
+router.post("/addShopReview", auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res.status(404).send({ msg: "Login as customer to give a review" });
+  }
+  try {
+    const { username } = req.user;
+    const { shop_id, ratings, comments } = req.body;
+    const query = { _id: shop_id, "reviews.username": username };
+    const update = {
+      $addToSet: {
+        reviews: {
+          username,
+          ratings,
+          comments,
+        },
+      },
+    };
+    const options = { new: true };
+    await SellerProfile.findOneAndUpdate(
+      query,
+      update,
+      options,
+      (err, product) => {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: "Shop Review Added",
+          data: product,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  } catch (error) {
+    return res.status(402).json({ error });
   }
 });
 
