@@ -11,6 +11,94 @@ const multer = require("multer");
 const multiparty = require("connect-multiparty");
 app.use(express.static("uploads"));
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // cb(null, "./noncompress");
+    cb(null, "./uploads/products");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.params.id + path.extname(file.originalname));
+  },
+});
+
+// path.extname(file.originalname)
+const upload = multer({
+  storage: storage,
+});
+
+router.route("/").get(auth, (req, res) => {
+  if (req.user.roll != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add profile create a seller account" });
+  }
+  res.send(req.user.username);
+});
+
+router
+  .route("/add/coverImage/:id")
+  .patch(auth, upload.single("coverImage"), async (req, res) => {
+    console.log("upload image");
+    // await compress(req.file.filename);
+
+    Product.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          coverImage: req.file.filename,
+        },
+      },
+      { new: true },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        return res.json(result);
+      }
+    );
+  });
+
+router.route("/Add").post(auth, (req, res) => {
+  if (req.user.roll != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add profile create a seller account" });
+  }
+  // console.log(req.user);
+  // console.log(req.body);
+  const { username } = req.user;
+  const {
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+  } = req.body;
+  const Item = Product({
+    productname,
+    username,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+  });
+  Item.save()
+    .then((result) => {
+      res.json({ data: result });
+    })
+    .catch((err) => {
+      console.log(err), res.json({ err: err });
+    });
+});
+
 router.route("/getOwnProducts").get(auth, (req, res) => {
   if (req.user.roll != "admin") {
     return res.status(404).send({ msg: "create a seller account to view" });
@@ -66,14 +154,7 @@ router.route("/editProductDetails").post(auth, (req, res) => {
       $set: {
         username: req.user.username,
         user_id: req.user._id,
-        productname: req.body.productname,
-        productmetadescription: req.body.productmetadescription,
-        productdescription: req.body.productdescription,
-        price: req.body.price,
-        sellprice: req.body.sellprice,
-        variation: req.body.variation,
-        inventory: req.body.inventory,
-        Item_Returnable: req.body.Item_Returnable,
+        ...req.body,
       },
     },
     { new: true },
@@ -82,6 +163,21 @@ router.route("/editProductDetails").post(auth, (req, res) => {
         console.log(err);
       }
       return res.json(result);
+    }
+  );
+});
+
+router.route("/active/").post(auth, (req, res) => {
+  Product.findOneAndUpdate(
+    { _id: req.body.id },
+    {
+      $set: {
+        active: req.body.active,
+      },
+    },
+    (err, result) => {
+      if (err) return res.json(err);
+      return res.json({ data: result });
     }
   );
 });
