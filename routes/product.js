@@ -5,108 +5,112 @@ const Product = require("../models/productModel");
 const Profile = require("../models/sellerModel");
 const USERProfile = require("../models/profileModel");
 const ShopProduct = require("../models/shoppingModel");
+const SellerNoti = require("../middleware/seller_noti");
+const BuyerNoti = require("../middleware/buyer_noti");
 
 const auth = require("../middleware/auth");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const multiparty = require("connect-multiparty");
+const sellerModel = require("../models/sellerModel");
+const productModel = require("../models/productModel");
 app.use(express.static("uploads"));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // cb(null, "./noncompress");
-    cb(null, "./uploads/products");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.params.id + path.extname(file.originalname));
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // cb(null, "./noncompress");
+//     cb(null, "./uploads/products");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, req.params.id + path.extname(file.originalname));
+//   },
+// });
 
-// path.extname(file.originalname)
-const upload = multer({
-  storage: storage,
-});
+// // path.extname(file.originalname)
+// const upload = multer({
+//   storage: storage,
+// });
 
-router.route("/").get(auth, (req, res) => {
-  if (req.user.roll != "admin") {
-    return res
-      .status(404)
-      .send({ msg: "You can't add profile create a seller account" });
-  }
-  res.send(req.user.username);
-});
+// router.route("/").get(auth, (req, res) => {
+//   if (req.user.roll != "admin") {
+//     return res
+//       .status(404)
+//       .send({ msg: "You can't add profile create a seller account" });
+//   }
+//   res.send(req.user.username);
+// });
 
-router
-  .route("/add/coverImage/:id")
-  .patch(auth, upload.single("coverImage"), async (req, res) => {
-    console.log("upload image");
-    // await compress(req.file.filename);
+// router
+//   .route("/add/coverImage/:id")
+//   .patch(auth, upload.single("coverImage"), async (req, res) => {
+//     console.log("upload image");
+//     // await compress(req.file.filename);
 
-    Product.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        $set: {
-          coverImage: req.file.filename,
-        },
-      },
-      { new: true },
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        }
-        return res.json(result);
-      }
-    );
-  });
+//     Product.findOneAndUpdate(
+//       { _id: req.params.id },
+//       {
+//         $set: {
+//           coverImage: req.file.filename,
+//         },
+//       },
+//       { new: true },
+//       (err, result) => {
+//         if (err) {
+//           console.log(err);
+//         }
+//         return res.json(result);
+//       }
+//     );
+//   });
 
-router.route("/Add").post(auth, (req, res) => {
-  if (req.user.roll != "admin") {
-    return res
-      .status(404)
-      .send({ msg: "You can't add profile create a seller account" });
-  }
-  // console.log(req.user);
-  // console.log(req.body);
-  const { username } = req.user;
-  const {
-    productname,
-    productmetadescription,
-    productdescription,
-    price,
-    sellprice,
-    variation,
-    inventory,
-    Item_Returnable,
-    category,
-  } = req.body;
-  const Item = Product({
-    productname,
-    username,
-    productmetadescription,
-    productdescription,
-    price,
-    sellprice,
-    variation,
-    inventory,
-    Item_Returnable,
-    category,
-  });
-  Item.save()
-    .then((result) => {
-      res.json({ data: result });
-    })
-    .catch((err) => {
-      console.log(err), res.json({ err: err });
-    });
-});
+// router.route("/Add").post(auth, (req, res) => {
+//   if (req.user.roll != "admin") {
+//     return res
+//       .status(404)
+//       .send({ msg: "You can't add profile create a seller account" });
+//   }
+//   // console.log(req.user);
+//   // console.log(req.body);
+//   const { username } = req.user;
+//   const {
+//     productname,
+//     productmetadescription,
+//     productdescription,
+//     price,
+//     sellprice,
+//     variation,
+//     inventory,
+//     Item_Returnable,
+//     category,
+//   } = req.body;
+//   const Item = Product({
+//     productname,
+//     username,
+//     productmetadescription,
+//     productdescription,
+//     price,
+//     sellprice,
+//     variation,
+//     inventory,
+//     Item_Returnable,
+//     category,
+//   });
+//   Item.save()
+//     .then((result) => {
+//       res.json({ data: result });
+//     })
+//     .catch((err) => {
+//       console.log(err), res.json({ err: err });
+//     });
+// });
 
 router.route("/products").get(async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
-
+  
   const startindex = (page - 1) * limit;
-  const posts = await Product.find({}).limit(limit).skip(startindex).exec();
+  const posts = await Product.find({active: true}).limit(limit).skip(startindex).exec();
   res.send(posts);
 });
 
@@ -115,26 +119,26 @@ router.route("/getProductsByLimit").get(async (req, res) => {
   const limit = parseInt(req.query.limit);
 
   const startindex = (page - 1) * limit;
-  const posts = await Product.find({}).limit(limit).skip(startindex).exec();
+  const posts = await Product.find({active: true}).limit(limit).skip(startindex).exec();
   res.send(posts);
 });
 
 router.route("/IdProduct/:id").get((req, res) => {
-  Product.findOne({ _id: req.params.id }, (err, result) => {
+  Product.findOne({ _id: req.params.id, active: true }, (err, result) => {
     if (err) return res.status(403).send(err);
     return res.send(result);
   });
 });
 
 router.route("/SellerProduct/:username").get((req, res) => {
-  Product.find({ username: req.params.username }, (err, result) => {
+  Product.find({ username: req.params.username, active: true }, (err, result) => {
     if (err) return res.status(403).send(err);
     return res.json(result);
   });
 });
 
 router.route("/getOtherProduct").get(auth, (req, res) => {
-  Product.find({ username: { $ne: req.user.username } }, (err, result) => {
+  Product.find({ username: { $ne: req.user.username }, active: true }, (err, result) => {
     if (err) return res.json(err);
     return res.json({ data: result });
   });
@@ -149,7 +153,7 @@ router.route("/AddToCart").post(auth, async (req, res) => {
 
   try {
     const { product_id, count } = req.body;
-    const product_details = await Product.findOne({ _id: product_id });
+    const product_details = await Product.findOne({ _id: product_id, active: true });
     // console.log(product_details);
     // return res.json({ product: product_details });
     const query = { username: req.user.username };
@@ -260,13 +264,17 @@ router.route("/buyProduct").post(auth, async (req, res) => {
       ...req.body,
     });
 
-    Buy_Item.save()
-      .then((result) => {
-        res.json({ data: result });
-      })
-      .catch((err) => {
-        console.log(err), res.json({ err: err });
-      });
+    Buy_Item.save().then(async (result) => {
+      var noti_to_seller = await SellerNoti(
+        req.body.sellerid,
+        "Product Has Been Requested by " + req.user.username
+      );
+      var noti_to_buyer = await BuyerNoti(
+        req.user._id,
+        "Product Reqested waiting For Shop To Accept Your Order"
+      );
+      res.json({ data: result });
+    });
   } catch (error) {
     console.log(error);
   }
@@ -280,7 +288,7 @@ router.route("/filterProductByCategory").post(auth, async (req, res) => {
   }
   try {
     const { category } = req.body;
-    const productsByCategory = await Product.find({ category });
+    const productsByCategory = await Product.find({ category , active: true});
     if (productsByCategory.length === 0) throw "No Products of this Category";
     return res.json({ productsByCategory });
   } catch (e) {
@@ -295,7 +303,7 @@ router.post("/addProductReview", auth, async (req, res) => {
   try {
     const { username } = req.user;
     const { product_id, ratings, comments } = req.body;
-    const query = { _id: product_id };
+    const query = { _id: product_id, active: true };
     const update = {
       $addToSet: {
         reviews: {
@@ -322,7 +330,7 @@ router.post("/addProductReview", auth, async (req, res) => {
 router.post("/getRatings", async (req, res) => {
   try {
     const { product_id } = req.body;
-    const product = await Product.findOne({ _id: product_id });
+    const product = await Product.findOne({ _id: product_id, active: true });
     const length = product.reviews.length;
     if (length === 0) res.json({ msg: "No Reviews" });
     const avg_reviews =

@@ -34,12 +34,13 @@ const userrouter = require("./routes/user");
 const profilerouter = require("./routes/profile");
 const sellerrouter = require("./routes/sellerprofile");
 const product = require("./routes/product");
+const sellerproduct = require("./routes/Sellerproducts");
 
 app.use("/user", userrouter);
 app.use("/profile", profilerouter);
 app.use("/sellerprofile", sellerrouter);
 app.use("/products", product);
-
+app.use("/sellerproduct/" , sellerproduct);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
