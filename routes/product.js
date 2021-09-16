@@ -64,48 +64,48 @@ app.use(express.static("uploads"));
 //     );
 //   });
 
-router.post("/Add", auth, (req, res) => {
-  if (req.user.roll != "admin") {
-    return res
-      .status(404)
-      .send({ msg: "You can't add profile create a seller account" });
-  }
-  // console.log(req.user);
-  // console.log(req.body);
-  const { username } = req.user;
-  const {
-    productname,
-    productmetadescription,
-    productdescription,
-    price,
-    sellprice,
-    variation,
-    inventory,
-    Item_Returnable,
-    category,
-    active,
-  } = req.body;
-  const Item = Product({
-    productname,
-    username,
-    productmetadescription,
-    productdescription,
-    price,
-    sellprice,
-    variation,
-    inventory,
-    Item_Returnable,
-    category,
-    active,
-  });
-  Item.save()
-    .then((result) => {
-      res.json({ data: result });
-    })
-    .catch((err) => {
-      console.log(err), res.json({ err: err });
-    });
-});
+// router.post("/Add", auth, (req, res) => {
+//   if (req.user.roll != "admin") {
+//     return res
+//       .status(404)
+//       .send({ msg: "You can't add profile create a seller account" });
+//   }
+//   // console.log(req.user);
+//   // console.log(req.body);
+//   const { username } = req.user;
+//   const {
+//     productname,
+//     productmetadescription,
+//     productdescription,
+//     price,
+//     sellprice,
+//     variation,
+//     inventory,
+//     Item_Returnable,
+//     category,
+//     active,
+//   } = req.body;
+//   const Item = Product({
+//     productname,
+//     username,
+//     productmetadescription,
+//     productdescription,
+//     price,
+//     sellprice,
+//     variation,
+//     inventory,
+//     Item_Returnable,
+//     category,
+//     active,
+//   });
+//   Item.save()
+//     .then((result) => {
+//       res.json({ data: result });
+//     })
+//     .catch((err) => {
+//       console.log(err), res.json({ err: err });
+//     });
+// });
 
 router.route("/products").get(async (req, res) => {
   const page = parseInt(req.query.page);
@@ -288,7 +288,7 @@ router.route("/buyProduct").post(auth, async (req, res) => {
       );
       var noti_to_buyer = await BuyerNoti(
         req.user._id,
-        "Product Reqested waiting For Shop To Accept Your Order"
+        "Product Requested waiting For Shop To Accept Your Order"
       );
       res.json({ data: result });
     });

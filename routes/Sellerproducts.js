@@ -4,7 +4,10 @@ const router = express.Router();
 const Product = require("../models/productModel");
 const Profile = require("../models/sellerModel");
 const USERProfile = require("../models/profileModel");
+const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
+const SellerNoti = require("../middleware/seller_noti");
+const BuyerNoti = require("../middleware/buyer_noti");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
@@ -180,6 +183,41 @@ router.route("/active/").post(auth, (req, res) => {
       return res.json({ data: result });
     }
   );
+});
+
+router.post("/updateStatus", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to update order status" });
+  }
+
+  const { order_id, status } = req.body;
+  await ShopProduct.findOneAndUpdate(
+    {
+      _id: order_id,
+      $and: [{ status: { $ne: "cancelled" } }, { status: { $ne: "rejected" } }],
+    },
+    { status },
+    { new: true, runValidators: true }
+  )
+    .then((updatedOrder) => {
+      if (!updatedOrder)
+        return res
+          .status(402)
+          .json({ error: "Order has been rejected/cancelled" });
+      // var noti_to_seller = SellerNoti(
+      //   req.user._id,
+      //   "Product Status Has been updated to " + status
+      // );
+      // var noti_to_buyer = BuyerNoti(
+      //   updatedOrder.buyerid,
+      //   "Product has been " + status + " by the seller"
+      // );
+      return res.send({ updatedOrder });
+    })
+    .catch((error) => {
+      if (error.errors) return res.status(403).json({ error: error.errors });
+      else res.status(404).json({ error: "No order found" });
+    });
 });
 
 module.exports = router;
