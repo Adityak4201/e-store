@@ -64,53 +64,58 @@ app.use(express.static("uploads"));
 //     );
 //   });
 
-// router.route("/Add").post(auth, (req, res) => {
-//   if (req.user.roll != "admin") {
-//     return res
-//       .status(404)
-//       .send({ msg: "You can't add profile create a seller account" });
-//   }
-//   // console.log(req.user);
-//   // console.log(req.body);
-//   const { username } = req.user;
-//   const {
-//     productname,
-//     productmetadescription,
-//     productdescription,
-//     price,
-//     sellprice,
-//     variation,
-//     inventory,
-//     Item_Returnable,
-//     category,
-//   } = req.body;
-//   const Item = Product({
-//     productname,
-//     username,
-//     productmetadescription,
-//     productdescription,
-//     price,
-//     sellprice,
-//     variation,
-//     inventory,
-//     Item_Returnable,
-//     category,
-//   });
-//   Item.save()
-//     .then((result) => {
-//       res.json({ data: result });
-//     })
-//     .catch((err) => {
-//       console.log(err), res.json({ err: err });
-//     });
-// });
+router.post("/Add", auth, (req, res) => {
+  if (req.user.roll != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add profile create a seller account" });
+  }
+  // console.log(req.user);
+  // console.log(req.body);
+  const { username } = req.user;
+  const {
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+    active,
+  } = req.body;
+  const Item = Product({
+    productname,
+    username,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+    active,
+  });
+  Item.save()
+    .then((result) => {
+      res.json({ data: result });
+    })
+    .catch((err) => {
+      console.log(err), res.json({ err: err });
+    });
+});
 
 router.route("/products").get(async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
-  
+
   const startindex = (page - 1) * limit;
-  const posts = await Product.find({active: true}).limit(limit).skip(startindex).exec();
+  const posts = await Product.find({ active: true })
+    .limit(limit)
+    .skip(startindex)
+    .exec();
   res.send(posts);
 });
 
@@ -119,7 +124,10 @@ router.route("/getProductsByLimit").get(async (req, res) => {
   const limit = parseInt(req.query.limit);
 
   const startindex = (page - 1) * limit;
-  const posts = await Product.find({active: true}).limit(limit).skip(startindex).exec();
+  const posts = await Product.find({ active: true })
+    .limit(limit)
+    .skip(startindex)
+    .exec();
   res.send(posts);
 });
 
@@ -131,17 +139,23 @@ router.route("/IdProduct/:id").get((req, res) => {
 });
 
 router.route("/SellerProduct/:username").get((req, res) => {
-  Product.find({ username: req.params.username, active: true }, (err, result) => {
-    if (err) return res.status(403).send(err);
-    return res.json(result);
-  });
+  Product.find(
+    { username: req.params.username, active: true },
+    (err, result) => {
+      if (err) return res.status(403).send(err);
+      return res.json(result);
+    }
+  );
 });
 
 router.route("/getOtherProduct").get(auth, (req, res) => {
-  Product.find({ username: { $ne: req.user.username }, active: true }, (err, result) => {
-    if (err) return res.json(err);
-    return res.json({ data: result });
-  });
+  Product.find(
+    { username: { $ne: req.user.username }, active: true },
+    (err, result) => {
+      if (err) return res.json(err);
+      return res.json({ data: result });
+    }
+  );
 });
 
 router.route("/AddToCart").post(auth, async (req, res) => {
@@ -153,7 +167,10 @@ router.route("/AddToCart").post(auth, async (req, res) => {
 
   try {
     const { product_id, count } = req.body;
-    const product_details = await Product.findOne({ _id: product_id, active: true });
+    const product_details = await Product.findOne({
+      _id: product_id,
+      active: true,
+    });
     // console.log(product_details);
     // return res.json({ product: product_details });
     const query = { username: req.user.username };
@@ -288,7 +305,7 @@ router.route("/filterProductByCategory").post(auth, async (req, res) => {
   }
   try {
     const { category } = req.body;
-    const productsByCategory = await Product.find({ category , active: true});
+    const productsByCategory = await Product.find({ category, active: true });
     if (productsByCategory.length === 0) throw "No Products of this Category";
     return res.json({ productsByCategory });
   } catch (e) {
@@ -301,19 +318,19 @@ router.post("/addProductReview", auth, async (req, res) => {
     return res.status(404).send({ msg: "Login as customer to give a review" });
   }
   try {
-    const { username } = req.user;
+    const { _id } = req.user;
     const { product_id, ratings, comments } = req.body;
-    const query = { _id: product_id, active: true };
+    const query = { _id: product_id };
     const update = {
       $addToSet: {
         reviews: {
-          username,
+          customer_id: _id,
           ratings,
           comments,
         },
       },
     };
-    const options = { new: true, upsert: true };
+    const options = { new: true };
     await Product.findOneAndUpdate(query, update, options, (err, product) => {
       if (err) return res.status(500).send(err);
       const response = {
@@ -338,6 +355,33 @@ router.post("/getRatings", async (req, res) => {
     res.json({ avg_reviews, length });
   } catch (error) {
     return res.status(402).json({ error });
+  }
+});
+
+router.post("/updateProductReview", auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res.status(404).send({ msg: "Login as customer to give a review" });
+  }
+  try {
+    const { _id } = req.user;
+    const { product_id, ratings, comments } = req.body;
+    await SellerProfile.findOneAndUpdate(
+      { _id: product_id, "reviews.customer_id": _id },
+      {
+        $set: { "reviews.$.ratings": ratings, "reviews.$.comments": comments },
+      },
+      { new: true },
+      function (err, product) {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: "Product Review Updated",
+          data: product,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  } catch (error) {
+    return res.send(401).json({ error });
   }
 });
 
