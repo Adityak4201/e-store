@@ -176,13 +176,13 @@ router.post("/addShopReview", auth, async (req, res) => {
     return res.status(404).send({ msg: "Login as customer to give a review" });
   }
   try {
-    const { username } = req.user;
+    const { _id } = req.user;
     const { shop_id, ratings, comments } = req.body;
     const query = { _id: shop_id };
     const update = {
       $addToSet: {
         reviews: {
-          username,
+          customer_id: _id,
           ratings,
           comments,
         },
@@ -193,11 +193,11 @@ router.post("/addShopReview", auth, async (req, res) => {
       query,
       update,
       options,
-      (err, product) => {
+      (err, shop) => {
         if (err) return res.status(500).send(err);
         const response = {
           message: "Shop Review Added",
-          data: product,
+          data: shop,
         };
         return res.status(200).send(response);
       }
@@ -218,6 +218,33 @@ router.post("/getRatings", async (req, res) => {
     res.json({ avg_reviews, length });
   } catch (error) {
     return res.status(402).json({ error });
+  }
+});
+
+router.post("/updateShopReview", auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res.status(404).send({ msg: "Login as customer to give a review" });
+  }
+  try {
+    const { _id } = req.user;
+    const { shop_id, ratings, comments } = req.body;
+    await SellerProfile.findOneAndUpdate(
+      { _id: shop_id, "reviews.customer_id": _id },
+      {
+        $set: { "reviews.$.ratings": ratings, "reviews.$.comments": comments },
+      },
+      { new: true },
+      function (err, shop) {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: "Shop Review Updated",
+          data: shop,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  } catch (error) {
+    return res.send(401).json({ error });
   }
 });
 
