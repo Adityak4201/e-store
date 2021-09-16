@@ -320,7 +320,7 @@ router.post("/addProductReview", auth, async (req, res) => {
   try {
     const { _id } = req.user;
     const { product_id, ratings, comments } = req.body;
-    const query = { _id: product_id };
+    const query = { _id: product_id, active: true };
     const update = {
       $addToSet: {
         reviews: {
@@ -366,7 +366,7 @@ router.post("/updateProductReview", auth, async (req, res) => {
     const { _id } = req.user;
     const { product_id, ratings, comments } = req.body;
     await SellerProfile.findOneAndUpdate(
-      { _id: product_id, "reviews.customer_id": _id },
+      { _id: product_id, "reviews.customer_id": _id, active: true },
       {
         $set: { "reviews.$.ratings": ratings, "reviews.$.comments": comments },
       },
