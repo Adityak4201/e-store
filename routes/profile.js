@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Profile = require("../models/profileModel");
+const ShopProduct = require("../models/shoppingModel");
 const SellerProfile = require("../models/sellerModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
