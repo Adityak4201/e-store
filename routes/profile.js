@@ -248,4 +248,39 @@ router.post("/updateShopReview", auth, async (req, res) => {
   }
 });
 
+router.post("/cancelOrder", auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res.status(404).send({ msg: "Login to cancel the order" });
+  }
+
+  const { order_id, status } = req.body;
+  await ShopProduct.findOneAndUpdate(
+    {
+      _id: order_id,
+      $and: [{ status: { $ne: "cancelled" } }, { status: { $ne: "rejected" } }],
+    },
+    { status },
+    { new: true, runValidators: true }
+  )
+    .then((cancelledOrder) => {
+      if (!cancelledOrder)
+        return res
+          .status(402)
+          .json({ error: "Order has been already rejected/cancelled" });
+      // var noti_to_seller = SellerNoti(
+      //   req.user._id,
+      //   "Product Status Has been updated to " + status
+      // );
+      // var noti_to_buyer = BuyerNoti(
+      //   updatedOrder.buyerid,
+      //   "Product has been " + status + " by the seller"
+      // );
+      return res.send({ cancelledOrder });
+    })
+    .catch((error) => {
+      if (error.errors) return res.status(403).json({ error: error.errors });
+      else res.status(404).json({ error: "No order found" });
+    });
+});
+
 module.exports = router;
