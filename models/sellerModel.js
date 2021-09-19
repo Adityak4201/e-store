@@ -35,6 +35,7 @@ const Seller_Profile = Schema({
   message: { type: Array, default: [] },
   reviews: { type: Array, default: [] },
   noti: { type: Array, default: [] },
+  staff: { type: Array, default: [] },
 });
 
 module.exports = mongoose.model("Seller_Profile", Seller_Profile);
