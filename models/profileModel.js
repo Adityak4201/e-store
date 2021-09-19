@@ -9,11 +9,11 @@ const Profile = Schema({
   username: {
     type: String,
   },
-  phone :{
+  phone: {
     type: String,
   },
   address: { type: Array, default: [] },
-  about: {
+  details: {
     type: String,
   },
   dob: {
