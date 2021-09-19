@@ -153,7 +153,7 @@ router.post("/addStaff", auth, async (req, res) => {
 
 router.post("/updateStaff", auth, async (req, res) => {
   if (req.user.roll != "admin") {
-    return res.status(404).send({ msg: "Login to add staff" });
+    return res.status(404).send({ msg: "Login to update staff details" });
   }
 
   const { s_position, s_username, s_password } = req.body;
@@ -163,7 +163,7 @@ router.post("/updateStaff", auth, async (req, res) => {
       username,
       "staff.s_username": s_username,
     },
-    { $set: { "staff.$": { s_position, s_password } } },
+    { $set: { "staff.$": { s_username, s_position, s_password } } },
     { new: true }
   )
     .then((staffUpdated) => {
@@ -181,7 +181,9 @@ router.post("/updateStaff", auth, async (req, res) => {
 
 router.post("/deleteStaff", auth, async (req, res) => {
   if (req.user.roll != "admin") {
-    return res.status(404).send({ msg: "Login to add staff" });
+    return res
+      .status(404)
+      .send({ msg: "Login to delete staff member details" });
   }
 
   const { s_username } = req.body;
@@ -199,6 +201,20 @@ router.post("/deleteStaff", auth, async (req, res) => {
     .catch((error) => {
       return res.status(403).json({ error });
     });
+});
+
+router.get("/viewStaff", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see staff list" });
+  }
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    if (!seller) throw "Seller Profile is missing";
+    return res.json({ staff: seller.staff });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
 });
 
 module.exports = router;
