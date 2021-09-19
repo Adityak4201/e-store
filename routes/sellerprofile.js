@@ -68,10 +68,9 @@ router.route("/add").post(auth, (req, res) => {
       .send({ msg: "You can't add profile create a seller account" });
   }
 
-
   const profiledata = Profile({
     username: req.user.username,
-    ...req.body
+    ...req.body,
   });
   profiledata
     .save()
@@ -83,15 +82,12 @@ router.route("/add").post(auth, (req, res) => {
     });
 });
 
-
 router.route("/getAllMessages/").get(auth, (req, res) => {
-
   if (req.user.roll != "admin") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
   }
-
 
   Profile.find({ username: req.user.username }, "message", (err, result) => {
     if (err) return res.status(403).send(err);
@@ -100,11 +96,8 @@ router.route("/getAllMessages/").get(auth, (req, res) => {
 });
 
 router.route("/getUserMessage/:username").get(auth, (req, res) => {
-
   if (req.user.roll != "admin") {
-    return res
-      .status(404)
-      .send({ msg: "create a seller account" });
+    return res.status(404).send({ msg: "create a seller account" });
   }
 
   var paramsUsername = req.params.username;
@@ -114,9 +107,12 @@ router.route("/getUserMessage/:username").get(auth, (req, res) => {
     if (err) return res.status(403).send(err);
 
     var i = 0;
-    for(x in result[0]["message"]){
-      if(result[0]["message"][x]["by"] == paramsUsername || result[0]["message"][x]["to"] == paramsUsername){
-        messages[i] = result[0]["message"][x]
+    for (x in result[0]["message"]) {
+      if (
+        result[0]["message"][x]["by"] == paramsUsername ||
+        result[0]["message"][x]["to"] == paramsUsername
+      ) {
+        messages[i] = result[0]["message"][x];
         i++;
       }
     }
@@ -124,5 +120,63 @@ router.route("/getUserMessage/:username").get(auth, (req, res) => {
   });
 });
 
+router.post("/addStaff", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to add staff" });
+  }
+  let { s_position, s_username, s_password } = req.body;
+  const { username } = req.user;
+  if (!s_position || s_position == "") s_position = "staff";
+  // const staffFound = await Profile.findOne({
+  //   username,
+  //   "staff.s_username": s_username,
+  // });
+  // if (staffFound) throw "Staff username already exists";
+  await Profile.findOneAndUpdate(
+    {
+      username,
+      "staff.s_username": { $ne: s_username },
+    },
+    { $addToSet: { staff: { s_position, s_username, s_password } } },
+    { new: true }
+  )
+    .then((staffAdded) => {
+      console.log(staffAdded);
+      if (!staffAdded)
+        return res.status(404).json({ error: "Staff username already exists" });
+      return res.send({ staffAdded });
+    })
+    .catch((error) => {
+      return res.status(404).json({ error: "No Seller Found" });
+    });
+});
+
+router.post("/updateStaff", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to add staff" });
+  }
+
+  const { s_position, s_username, s_password } = req.body;
+  const { username } = req.user;
+  await Profile.findOneAndUpdate(
+    {
+      username,
+      "staff.s_username": s_username,
+    },
+    { $set: { "staff.$": { s_position, s_password } } },
+    { new: true }
+  )
+    .then((staffUpdated) => {
+      console.log(staffUpdated);
+      if (!staffUpdated)
+        return res
+          .status(404)
+          .json({ error: "Staff not found with given username" });
+      return res.send({ staffUpdated });
+    })
+    .catch((error) => {
+      return res.status(404).json({ error: "No Seller Found" });
+    });
+});
 
 module.exports = router;
