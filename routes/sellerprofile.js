@@ -141,7 +141,7 @@ router.post("/addStaff", auth, async (req, res) => {
     { new: true }
   )
     .then((staffAdded) => {
-      console.log(staffAdded);
+      // console.log(staffAdded);
       if (!staffAdded)
         return res.status(404).json({ error: "Staff username already exists" });
       return res.send({ staffAdded });
@@ -167,7 +167,7 @@ router.post("/updateStaff", auth, async (req, res) => {
     { new: true }
   )
     .then((staffUpdated) => {
-      console.log(staffUpdated);
+      // console.log(staffUpdated);
       if (!staffUpdated)
         return res
           .status(404)
@@ -176,6 +176,28 @@ router.post("/updateStaff", auth, async (req, res) => {
     })
     .catch((error) => {
       return res.status(404).json({ error: "No Seller Found" });
+    });
+});
+
+router.post("/deleteStaff", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to add staff" });
+  }
+
+  const { s_username } = req.body;
+  const { username } = req.user;
+  await Profile.updateOne(
+    {
+      username,
+    },
+    { $pull: { staff: { s_username } } }
+  )
+    .then((deleted) => {
+      // console.log(deleted);
+      return res.json({ msg: "Staff with given username deleted" });
+    })
+    .catch((error) => {
+      return res.status(403).json({ error });
     });
 });
 
