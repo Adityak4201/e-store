@@ -217,4 +217,27 @@ router.get("/viewStaff", auth, async (req, res) => {
   }
 });
 
+router.post("/addAbout", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see staff list" });
+  }
+  const { username } = req.user;
+  const { about, return_policy } = req.body;
+  await Profile.findOneAndUpdate(
+    { username },
+    { $set: { details: { about, return_policy } } },
+    { new: true }
+  )
+    .then((updatedSeller) => {
+      if (!updatedSeller)
+        return res
+          .status(404)
+          .json({ error: "Seller Username does not exists!!" });
+      return res.send({ updatedSeller });
+    })
+    .catch((error) => {
+      return res.status(403).json({ error });
+    });
+});
+
 module.exports = router;
