@@ -29,8 +29,9 @@ const Seller_Profile = Schema({
   city: {
     type: String,
   },
-  about: {
-    type: String,
+  details: {
+    about: { type: String },
+    return_policy: { type: String },
   },
   message: { type: Array, default: [] },
   reviews: { type: Array, default: [] },
