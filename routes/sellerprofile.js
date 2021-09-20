@@ -240,4 +240,18 @@ router.post("/addAbout", auth, async (req, res) => {
     });
 });
 
+router.get("/showAbout", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see staff list" });
+  }
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    if (!seller) throw "Seller Profile is missing";
+    return res.json({ details: seller.details });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
 module.exports = router;
