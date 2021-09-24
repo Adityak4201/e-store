@@ -27,6 +27,11 @@ const user = userschema({
             }
         }
     },
+    phone: {
+        type: Number,
+        required: true,
+        minlength: 10,
+    },
     password: {
         type: String,
         required: true,
@@ -35,6 +40,10 @@ const user = userschema({
     confpassword: {
         type: String,
     },
+    status:{
+        type: String,
+        "default" : "unapproved"
+    }
 });
 
 
