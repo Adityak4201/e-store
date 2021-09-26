@@ -236,7 +236,7 @@ router.get("/getBuyersList", auth, async (req, res) => {
     // console.log(buyersList);
     return res.json({ buyersList });
   } catch (error) {
-    return res.status(404).json({ error });
+    return res.status(403).json({ error });
   }
 });
 
