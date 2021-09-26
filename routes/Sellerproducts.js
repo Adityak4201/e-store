@@ -220,4 +220,24 @@ router.post("/updateStatus", auth, async (req, res) => {
     });
 });
 
+router.get("/getBuyersList", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see buyers' list" });
+  }
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    // console.log(seller);
+    const buyersList = await ShopProduct.find(
+      { sellerid: seller._id },
+      { buyerid: 1, buyername: 1, buyerphone: 1, date: 1, _id: 0 }
+    );
+    if (!buyersList || buyersList.length === 0) throw "No Buyers";
+    // console.log(buyersList);
+    return res.json({ buyersList });
+  } catch (error) {
+    return res.status(404).json({ error });
+  }
+});
+
 module.exports = router;
