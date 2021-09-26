@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Profile = require("../models/sellerModel");
+const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
@@ -254,6 +255,26 @@ router.get("/showAbout", auth, async (req, res) => {
   }
 });
 
+router.get("/getBuyersList", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see buyers' list" });
+  }
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    // console.log(seller);
+    const buyersList = await ShopProduct.find(
+      { sellerid: seller._id },
+      { buyerid: 1, buyername: 1, buyerphone: 1, date: 1, _id: 0 }
+    );
+    if (!buyersList || buyersList.length === 0) throw "No Buyers";
+    // console.log(buyersList);
+    return res.json({ buyersList });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
 router.post("/addVisitor", auth, async (req, res) => {
   if (req.user.roll != "basic") {
     return res
@@ -277,6 +298,21 @@ router.post("/addVisitor", auth, async (req, res) => {
     .catch((error) => {
       return res.status(403).json({ error });
     });
+});
+
+router.get("/getVisitors", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see visitors list" });
+  }
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username }, { visitors: 1, _id: 0 });
+    if (!seller.visitors || seller.visitors.length === 0) throw "No Visitors";
+    // console.log(buyersList);
+    return res.json({ visitors: seller.visitors });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
 });
 
 module.exports = router;
