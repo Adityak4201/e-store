@@ -254,4 +254,29 @@ router.get("/showAbout", auth, async (req, res) => {
   }
 });
 
+router.post("/addVisitor", auth, async (req, res) => {
+  if (req.user.roll != "basic") {
+    return res
+      .status(404)
+      .send({ msg: "Visitor can only be added after he is signed in!!" });
+  }
+  const { shop_id } = req.body;
+  const { _id, username } = req.user;
+
+  await Profile.findOneAndUpdate(
+    { _id: shop_id },
+    { $set: { visitors: { id: _id, username } } },
+    { new: true }
+  )
+    .then((visitorAdded) => {
+      console.log(visitorAdded);
+      if (!visitorAdded)
+        return res.status(404).json({ error: "Seller ID not found!!" });
+      return res.send({ visitorAdded });
+    })
+    .catch((error) => {
+      return res.status(403).json({ error });
+    });
+});
+
 module.exports = router;
