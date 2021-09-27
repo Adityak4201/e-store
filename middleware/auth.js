@@ -17,6 +17,10 @@ const auth = async (req, res, next) => {
     req.token = token;
     req.user = user;
     if (user != null) {
+      if (user.status !== "approved")
+        return res
+          .status(403)
+          .json({ error: "Please verify yourself first!!!" });
       next();
     } else {
       res.status(401).send("no such user");
