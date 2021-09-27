@@ -1,6 +1,5 @@
 const express = require("express");
 const auth = require("../middleware/auth");
-
 const USER = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { check, validationResult } = require("express-validator");

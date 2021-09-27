@@ -9,12 +9,15 @@ const app = express();
 app.use(cookieParser());
 app.use(cors());
 
-mongoose.connect("mongodb+srv://piyush:piyush2001@magi2.k3zwz.mongodb.net/test", {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-});
+mongoose.connect(
+  "mongodb+srv://piyush:piyush2001@magi2.k3zwz.mongodb.net/test",
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  }
+);
 
 const connection = mongoose.connection;
 connection.once("open", () => {
@@ -35,12 +38,14 @@ const profilerouter = require("./routes/profile");
 const sellerrouter = require("./routes/sellerprofile");
 const product = require("./routes/product");
 const sellerproduct = require("./routes/Sellerproducts");
+const visitorrouter = require("./routes/visitor");
 
 app.use("/user", userrouter);
 app.use("/profile", profilerouter);
 app.use("/sellerprofile", sellerrouter);
 app.use("/products", product);
-app.use("/sellerproduct/" , sellerproduct);
+app.use("/sellerproduct/", sellerproduct);
+app.use("/visitor", visitorrouter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
