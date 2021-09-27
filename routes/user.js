@@ -108,20 +108,20 @@ router
                 "verfiy email"
               ).toString();
 
-              console.log("before----------", hashPass);
+              // console.log("before----------", hashPass);
 
               hashPass = await encodeURIComponent(hashPass);
 
-              console.log("----------", hashPass);
+              // console.log("----------", hashPass);
               mytext = `Click here to verify <a href='http://localhost:3000/user/verify?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
               to = req.body.email;
               var mailResponse = await sendmail(subject, mytext, to);
               res
                 .status(200)
-                .send({ msg: "user succesfully saved", token : token });
+                .send({ msg: "user succesfully saved", token: token });
             })
             .catch((err) => {
-              console.log("error", err);
+              // console.log("error", err);
               res.status(403).send({ error: err });
             });
         } else {
@@ -134,34 +134,29 @@ router
     }
   );
 
-router.route("/getAccType/:username").get( async (req, res) => {
+router.route("/getAccType/:username").get(async (req, res) => {
   USER.findOne({ username: req.params.username }, "roll", (err, result) => {
     if (err) return res.status(403).send(err);
     return res.json(result);
   }).select("-_id");
 });
 
-router.route("/getVerifyMail").post( auth, async (req, res) => {
-
+router.route("/getVerifyMail").post(auth, async (req, res) => {
   try {
-    
-  
-  subject = "Verify Your Account";
-  hashPass = await CryptoJS.AES.encrypt(
-    req.body.password,
-    "verfiy email"
-  ).toString();
-  console.log("before----------", hashPass);
-  hashPass = await encodeURIComponent(hashPass);
-  console.log("----------", hashPass);
-  mytext = `Click here to verify <a href='http://localhost:3000/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
-  to = req.user.email;
-  var mailResponse = await sendmail(subject, mytext, to);
-  res
-    .status(200)
-    .send({ msg: "user succesfully saved", mail: mailResponse });
+    subject = "Verify Your Account";
+    hashPass = await CryptoJS.AES.encrypt(
+      req.body.password,
+      "verfiy email"
+    ).toString();
+    // console.log("before----------", hashPass);
+    hashPass = await encodeURIComponent(hashPass);
+    // console.log("----------", hashPass);
+    mytext = `Click here to verify <a href='http://localhost:3000/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
+    to = req.user.email;
+    var mailResponse = await sendmail(subject, mytext, to);
+    res.status(200).send({ msg: "user succesfully saved", mail: mailResponse });
   } catch (error) {
-    console.log({"error" : error}) 
+    return res.status(404).json({ error });
   }
 });
 
@@ -169,7 +164,7 @@ router.route("/verify").get(async (req, res) => {
   username = req.query.un;
   CryptoJSpassword = CryptoJS.AES.decrypt(req.query.hp, "verfiy email");
   password = CryptoJSpassword.toString(CryptoJS.enc.Utf8);
-  console.log("password", password , req.query.hp);
+  console.log("password", password, req.query.hp);
 
   USER.findOne({ username: username }, async (err, result) => {
     if (err) return res.status(403).send(err);
@@ -180,14 +175,14 @@ router.route("/verify").get(async (req, res) => {
       USER.findOneAndUpdate(
         { username: username },
         { status: "approved" },
-        {new: true},
+        { new: true },
         async (uerr, updatedresult) => {
           if (uerr) return res.status(403).send(uerr);
           return res.json(updatedresult);
         }
       );
-    }else{
-      return res.json({msg : "Verfication Failed. Please SignUp Again"});
+    } else {
+      return res.json({ msg: "Verfication Failed. Please SignUp Again" });
     }
   }).select("-_id");
   // res.status(200).send({ username: username, password: password });
