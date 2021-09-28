@@ -17,21 +17,17 @@ router.post("/addVisitor", auth, async (req, res) => {
     await Visitor.findOneAndUpdate(
       { seller_username },
       {
-        $set: {
+        $addToSet: {
           visitor_info: {
             username,
             email,
             phone,
             name,
-            "product.$.id": product_id,
+            product_id,
           },
         },
       },
-      {
-        new: true,
-        upsert: true,
-        arrayFilters: [{ "outer.username": username }],
-      }
+      { new: true, upsert: true }
     )
       .then((visitorAdded) => {
         console.log(visitorAdded);
