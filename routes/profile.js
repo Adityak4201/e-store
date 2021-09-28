@@ -3,6 +3,7 @@ const router = express.Router();
 const Profile = require("../models/profileModel");
 const ShopProduct = require("../models/shoppingModel");
 const SellerProfile = require("../models/sellerModel");
+const message_Seller = require("../models/messageModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
@@ -144,29 +145,83 @@ router.route("/filterBySellerCategory").get(auth, (req, res) => {
 
 router.route("/message").post(auth, (req, res) => {
   try {
-    const sentDate = new Date();
-
-    const sentMessage = {
+    const sentMessage = message_Seller({
       by: req.user.username,
       to: req.body.message_to,
       message: req.body.message,
-      time: sentDate,
-    };
-    SellerProfile.findOneAndUpdate(
-      { username: req.body.message_to },
-      {
-        $push: { message: sentMessage },
-      },
-      { new: true },
-      (err, profile) => {
-        if (err) return res.status(500).send(err);
-        const response = {
-          message: " added successfully updated",
-          data: profile,
-        };
-        return res.status(200).send(response);
+    });
+
+    sentMessage
+      .save()
+      .then((result) => {
+        res.json({ result });
+      })
+      .catch((err) => {
+        console.log(err), res.json({ err });
+      });
+  } catch (err) {
+    console.log(err), res.json({ err: err });
+  }
+});
+
+// all chats of a user whoever he messaged or from whoever he recived message
+router.route("/userMessage").post(auth, (req, res) => {
+  try {
+    message_Seller.find(
+      { $or: [{ to: req.user.username }, { by: req.user.username }] },
+      function (err, result) {
+        if (err) return res.status(403).send(err);
+        return res.json(result);
       }
     );
+  } catch (err) {
+    console.log(err), res.json({ err: err });
+  }
+});
+
+// user message to any other particular user
+router.route("/chatWithUser").post(auth, (req, res) => {
+  try {
+    message_Seller.find(
+      {
+        $or: [
+          { to: req.body.username, by: req.user.username },
+          { to: req.user.username, by: req.body.username },
+        ],
+      },
+      function (err, result) {
+        if (err) return res.status(403).send(err);
+        return res.json(result);
+      }
+    );
+  } catch (err) {
+    console.log(err), res.json({ err: err });
+  }
+});
+
+// all users who have messaged to logged in user
+router.route("/messagedBy").post(auth, (req, res) => {
+  try {
+    message_Seller
+      .find({ to: req.user.username }, "by")
+      .distinct("by", async function (err, result) {
+        if (err) return res.status(403).send(err);
+        return res.json(result);
+      });
+  } catch (err) {
+    console.log(err), res.json({ err: err });
+  }
+});
+
+// all user who looged in user have messaged
+router.route("/messagedTo").post(auth, (req, res) => {
+  try {
+    message_Seller
+      .find({ by: req.user.username }, "to")
+      .distinct("to", async function (err, result) {
+        if (err) return res.status(403).send(err);
+        return res.json(result);
+      });
   } catch (err) {
     console.log(err), res.json({ err: err });
   }
