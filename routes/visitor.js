@@ -65,7 +65,7 @@ router.get("/getVisitors", auth, async (req, res) => {
   try {
     const { seller_username } = req.user;
     const seller = await Visitor.findOne({ seller_username });
-    if (!seller.visitor_info || seller.visitor_info.length === 0)
+    if (!seller || !seller.visitor_info || seller.visitor_info.length === 0)
       throw "No Visitors";
     // console.log(buyersList);
     return res.json({ visitors: seller.visitor_info });
