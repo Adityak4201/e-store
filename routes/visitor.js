@@ -42,8 +42,8 @@ router.post("/addVisitor", auth, async (req, res) => {
     await Visitor.findOneAndUpdate(
       { seller_username },
       {
-        $set: {
-          visitor_info: { username, name, email, phone, product: [] },
+        $addToSet: {
+          visitor_info: { username, name, email, phone },
         },
       },
       { new: true, upsert: true }
