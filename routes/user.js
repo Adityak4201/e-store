@@ -9,8 +9,8 @@ const sendmail = require("../middleware/sendmail");
 const { text } = require("body-parser");
 const CryptoJS = require("crypto-js");
 const router = express.Router();
-router.get("/", async (req, res) => {
-  res.send({ msg: "Welcome user" });
+router.get("/", auth,  async (req, res) => {
+  res.send({ msg: "Welcome user" + req.user.username });
 });
 
 router.get("/getUser/:id", async (req, res) => {

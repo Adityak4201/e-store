@@ -11,19 +11,7 @@ const Visitor = new Schema(
       type: Array,
       default: [],
       required: true,
-    },
-    // name: {
-    //     type: String,
-    //     required: true,
-    // },
-    // phone: {
-    //     type: String,
-    //     required: true
-    // },
-    // product_id: {
-    //     type: String,
-    //     required: true,
-    // }
+    }
   },
   { timestamps: true }
 );

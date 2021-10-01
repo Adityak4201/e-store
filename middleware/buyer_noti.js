@@ -2,11 +2,11 @@
 const Profile = require('../models/profileModel');
 
 
-var buyernoti = async function (buyerid, notification) {
+var buyernoti = async function (buyername, notification) {
   var datetime = new Date();
 
   Profile.findOneAndUpdate(
-    { _id: buyerid },
+    { username: buyername },
     { $push: { noti: {"noti": notification, "date": datetime } } },
     function (error, success) {
       if (error) {

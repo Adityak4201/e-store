@@ -199,23 +199,24 @@ router.post("/updateStatus", auth, async (req, res) => {
     { status },
     { new: true, runValidators: true }
   )
-    .then((updatedOrder) => {
-      if (!updatedOrder)
+    .then( async (updatedOrder) => {
+      if (!updatedOrder){
         return res
           .status(402)
           .json({ error: "Order has been rejected/cancelled" });
-      // var noti_to_seller = SellerNoti(
-      //   req.user._id,
-      //   "Product Status Has been updated to " + status
-      // );
-      // var noti_to_buyer = BuyerNoti(
-      //   updatedOrder.buyerid,
-      //   "Product has been " + status + " by the seller"
-      // );
-      return res.send({ updatedOrder });
+      }
+      var noti_to_seller = await SellerNoti(
+        req.user.username,
+        "Product Status Has been updated to " + status
+      );
+      var noti_to_buyer = await BuyerNoti(
+        updatedOrder.buyername,
+        "Product has been " + status + " by the seller"
+      );
+      res.send({ updatedOrder });
     })
     .catch((error) => {
-      if (error.errors) return res.status(403).json({ error: error.errors });
+      if (error) return res.status(403).json({ error: error });
       else res.status(404).json({ error: "No order found" });
     });
 });
