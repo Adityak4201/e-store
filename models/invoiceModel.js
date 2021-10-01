@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const Visitor = new Schema(
+const Invoice = new Schema(
   {
     seller_username: {
       type: String,
       required: true,
     },
-    visitor_info: {
+    invoices: {
       type: Array,
       default: [],
       required: true,
@@ -16,4 +16,4 @@ const Visitor = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Visitor", Visitor);
+module.exports = mongoose.model("Invoice", Invoice);

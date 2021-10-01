@@ -39,6 +39,7 @@ const sellerrouter = require("./routes/sellerprofile");
 const product = require("./routes/product");
 const sellerproduct = require("./routes/Sellerproducts");
 const visitorrouter = require("./routes/visitor");
+const invoiceRouter = require("./routes/invoice");
 
 app.use("/user", userrouter);
 app.use("/profile", profilerouter);
@@ -46,6 +47,7 @@ app.use("/sellerprofile", sellerrouter);
 app.use("/products", product);
 app.use("/sellerproduct/", sellerproduct);
 app.use("/visitor", visitorrouter);
+app.use("/invoice", invoiceRouter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
