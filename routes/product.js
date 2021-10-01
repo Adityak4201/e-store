@@ -112,10 +112,7 @@ router.route("/products").get(async (req, res) => {
   const limit = parseInt(req.query.limit);
 
   const startindex = (page - 1) * limit;
-  const posts = await Product.find({ active: true })
-    .limit(limit)
-    .skip(startindex)
-    .exec();
+  const posts = await Product.find({ active: true }).exec();
   res.send(posts);
 });
 
@@ -283,11 +280,11 @@ router.route("/buyProduct").post(auth, async (req, res) => {
 
     Buy_Item.save().then(async (result) => {
       var noti_to_seller = await SellerNoti(
-        req.body.sellerid,
+        req.body.sellername,
         "Product Has Been Requested by " + req.user.username
       );
       var noti_to_buyer = await BuyerNoti(
-        req.user._id,
+        req.user.username,
         "Product Requested waiting For Shop To Accept Your Order"
       );
       res.json({ data: result });
@@ -297,12 +294,7 @@ router.route("/buyProduct").post(auth, async (req, res) => {
   }
 });
 
-router.route("/filterProductByCategory").post(auth, async (req, res) => {
-  if (req.user.roll != "basic") {
-    return res
-      .status(404)
-      .send({ msg: "Login as customer to see products by category" });
-  }
+router.route("/filterProductByCategory").post(async (req, res) => {
   try {
     const { category } = req.body;
     const productsByCategory = await Product.find({ category, active: true });
