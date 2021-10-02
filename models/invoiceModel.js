@@ -1,23 +1,19 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const Visitor = new Schema(
+const Invoice = new Schema(
   {
     seller_username: {
       type: String,
       required: true,
     },
-    visitor_info: {
+    invoices: {
       type: Array,
       default: [],
       required: true,
-<<<<<<< HEAD
-    }
-=======
     },
->>>>>>> e142993e275cf9fa4461db50b1156b81f4911937
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Visitor", Visitor);
+module.exports = mongoose.model("Invoice", Invoice);
