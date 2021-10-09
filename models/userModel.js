@@ -28,9 +28,9 @@ const user = userschema({
     },
   },
   phone: {
-    type: Number,
+    type: String,
     required: true,
-    minlength: 10,
+    unique: true,
   },
   password: {
     type: String,
