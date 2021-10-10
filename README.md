@@ -189,15 +189,17 @@ const { s_username } = req.body;
 
 - used for deleting Staff from a seller profile
 
+<<<<<<< HEAD
+
 ### `GET /viewStaff`
 
 - used for viewing Staff of a seller profile
 
 ### `POST /addAbout`
 
-```
-  const { about, return_policy } = req.body;
-```
+=======
+
+### `GET /viewStaff`
 
 - used for adding about and return policy of a seller profile
 
@@ -207,7 +209,15 @@ const { s_username } = req.body;
 
 - used for viewing about and return policy of a seller profile
 
+<<<<<<< HEAD
+
 ### `GET /getBuyersList`
+
+=======
+
+### `GET /getBuyersList`
+
+> > > > > > > f4d2f56 (Update README.md)
 
 - used for viewing all buyers of a seller profile
 
