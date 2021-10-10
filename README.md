@@ -162,7 +162,7 @@ req.body.username
 
 - used for adding profile img of a seller user in folder "uploads/sellerprofile"
 
-### ```PATCH /addStaff```
+### ```POSt /addStaff```
 
   ```        
   let { s_position, s_username, s_password } = req.body;
@@ -170,7 +170,7 @@ req.body.username
 
 - used for adding Staff of to a seller profile
 
-### ```PATCH /deleteStaff```
+### ```POST /deleteStaff```
 
   ```        
   const { s_username } = req.body;
@@ -179,12 +179,12 @@ req.body.username
 - used for deleting Staff from a seller profile
 
 
-### ```PATCH /viewStaff```
+### ```GET /viewStaff```
 
 
 - used for viewing Staff of a seller profile
 
-### ```PATCH /addAbout```
+### ```GET /addAbout```
 
 ```
   const { about, return_policy } = req.body;
@@ -197,7 +197,7 @@ req.body.username
 
 - used for viewing about and return policy  of a seller profile
 
-### ```PATCH /getBuyersList```
+### ```GET /getBuyersList```
 
 - used for viewing all buyers of a seller profile
 
