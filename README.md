@@ -211,4 +211,49 @@ const { s_username } = req.body;
 
 - used for viewing all buyers of a seller profile
 
-- cancel the status of an order by providing `req.body.status : "cancelled" `
+## SELLERPRODUCTS.JS Requests
+
+### ```POST /Add```
+```
+    productname,
+    productmetadescription,
+    productdescription,
+    price,
+    sellprice,
+    variation,
+    inventory,
+    Item_Returnable,
+    category,
+```
+
+- used for creating product of a seller user . 
+
+
+### ```PATCH /add/coverImage/:id```
+```
+req.file
+```
+- used for adding product img of a seller user .
+
+ 
+### ```GET /getOwnProducts```
+
+- returns all products of a seller .
+
+### ``` GET /getByLimit```
+```
+req.query.page
+req.query.limit
+```
+- return limited products for a page
+
+### ```DELETE /deleteSellerProduct/:id```
+
+- delete a product with some id of a seller
+
+### ```POST /editProductDetails```
+```
+req.body.id,
+and other edited parameters
+```
+- edit details of a product
