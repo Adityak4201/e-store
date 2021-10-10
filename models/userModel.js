@@ -11,6 +11,7 @@ const user = userschema({
   roll: {
     type: String,
     default: "basic",
+    enum: ["basic", "admin"],
   },
   username: {
     type: String,

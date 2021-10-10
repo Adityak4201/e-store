@@ -9,13 +9,25 @@ const sendmail = require("../middleware/sendmail");
 const { text } = require("body-parser");
 const CryptoJS = require("crypto-js");
 const router = express.Router();
-router.get("/", auth,  async (req, res) => {
+router.get("/", auth, async (req, res) => {
   res.send({ msg: "Welcome user" + req.user.username });
 });
 
 router.get("/getUser/:id", async (req, res) => {
   try {
     USER.findOne({ _id: req.params.id }, function (err, response) {
+      if (err) console.log(err);
+      res.send(response);
+    }).select("-_id -password");
+  } catch (error) {
+    res.status(403).send(error);
+    console.log(error);
+  }
+});
+
+router.post("/getUser/", auth, async (req, res) => {
+  try {
+    USER.findOne({ _id: req.user.id }, function (err, response) {
       if (err) console.log(err);
       res.send(response);
     }).select("-_id -password");

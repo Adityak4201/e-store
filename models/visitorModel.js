@@ -11,11 +11,7 @@ const Visitor = new Schema(
       type: Array,
       default: [],
       required: true,
-<<<<<<< HEAD
     }
-=======
-    },
->>>>>>> e142993e275cf9fa4461db50b1156b81f4911937
   },
   { timestamps: true }
 );
