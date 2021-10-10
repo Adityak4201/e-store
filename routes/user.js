@@ -8,6 +8,7 @@ const { OAuth2Client } = require("google-auth-library");
 const sendmail = require("../middleware/sendmail");
 const { text } = require("body-parser");
 const CryptoJS = require("crypto-js");
+const { getCleanUser } = require("../utils/utils");
 const router = express.Router();
 router.get("/", auth, async (req, res) => {
   res.send({ msg: "Welcome user" + req.user.username });
@@ -25,6 +26,7 @@ router.get("/getUser/:id", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 router.post("/getUser/", auth, async (req, res) => {
   try {
     USER.findOne({ _id: req.user.id }, function (err, response) {
@@ -48,33 +50,60 @@ router
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
-      }
-      try {
-        const username = req.body.username;
-        const password = req.body.password;
-        var givenroll = "basic";
-        if (req.body.roll != undefined) {
-          givenroll = req.body.roll;
-        }
-        const userfind = await USER.findOne({ username: username });
-        if (userfind) {
-          let ismatch = await bcrypt.compare(password, userfind.password);
-          if (ismatch) {
-            let token = await userfind.generateAuthToken(givenroll);
-            console.log(token);
-            res.send({ token });
-          } else {
-            res.json({ msg: "password incorrect" });
-          }
-        } else {
-          res.send("no user found");
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(401).send(error);
-      }
+=======
+router.post(
+  "/login",
+  [
+    check(
+      "userEmailPhone",
+      "Enter at least one of email, phone or username"
+    ).notEmpty(),
+    check("password", "password is required").exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-  );
+    try {
+      const { userEmailPhone, password } = req.body;
+      var givenroll = "basic";
+      if (req.body.roll != undefined) {
+        givenroll = req.body.roll;
+>>>>>>> 4bceb5fbf4038d8fac352f3f70a3a10a8c4dcb58
+      }
+      const user = await USER.findOne({
+        $or: [
+          {
+            email: userEmailPhone,
+          },
+          {
+            phone: userEmailPhone,
+          },
+          {
+            username: userEmailPhone,
+          },
+        ],
+      });
+      if (user) {
+        let ismatch = await bcrypt.compare(password, user.password);
+        if (ismatch) {
+          let token = await user.generateAuthToken(givenroll);
+          console.log(token);
+          const cleanUser = getCleanUser(user);
+          res.send({ user: cleanUser, token });
+        } else {
+          res.json({ msg: "password incorrect" });
+        }
+      } else {
+        res.send("no user found");
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(401).send(error);
+    }
+  }
+);
 
 router
   .route("/register")
