@@ -160,3 +160,55 @@ req.body.username
 ```
 
 - cancel the status of an order by providing `req.body.status : "cancelled" `
+
+## SELLERPROFILE.JS Requests
+
+### `POST /add`
+
+- used for creating profile of a seller user .
+
+### `PATCH /add/image`
+
+```
+  req.file
+```
+
+- used for adding profile img of a seller user in folder "uploads/sellerprofile"
+
+### `PATCH /addStaff`
+
+```
+let { s_position, s_username, s_password } = req.body;
+```
+
+- used for adding Staff of to a seller profile
+
+### `PATCH /deleteStaff`
+
+```
+const { s_username } = req.body;
+```
+
+- used for deleting Staff from a seller profile
+
+### `PATCH /viewStaff`
+
+- used for viewing Staff of a seller profile
+
+### `PATCH /addAbout`
+
+```
+  const { about, return_policy } = req.body;
+```
+
+- used for adding about and return policy of a seller profile
+
+### `PATCH /showAbout`
+
+- used for viewing about and return policy of a seller profile
+
+### `PATCH /getBuyersList`
+
+- used for viewing all buyers of a seller profile
+
+- cancel the status of an order by providing `req.body.status : "cancelled" `
