@@ -184,7 +184,7 @@ req.body.username
 
 - used for viewing Staff of a seller profile
 
-### ```GET /addAbout```
+### ```POST /addAbout```
 
 ```
   const { about, return_policy } = req.body;
@@ -192,7 +192,7 @@ req.body.username
 
 - used for adding about and return policy  of a seller profile
 
-### ```PATCH /showAbout```
+### ```GET /showAbout```
 
 
 - used for viewing about and return policy  of a seller profile
