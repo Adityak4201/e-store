@@ -27,26 +27,36 @@ router.get("/getUser/:id", async (req, res) => {
   }
 });
 
-router.post(
-  "/login",
-  [
-    check(
-      "userEmailPhone",
-      "Enter at least one of email, phone or username"
-    ).notEmpty(),
-    check("password", "password is required").exists(),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const { userEmailPhone, password } = req.body;
-      var givenroll = "basic";
-      if (req.body.roll != undefined) {
-        givenroll = req.body.roll;
+router.post("/getUser/", auth, async (req, res) => {
+  try {
+    USER.findOne({ _id: req.user.id }, function (err, response) {
+      if (err) console.log(err);
+      res.send(response);
+    }).select("-_id -password");
+  } catch (error) {
+    res.status(403).send(error);
+    console.log(error);
+  }
+});
+
+router
+  .route("/login")
+  .post(
+    [
+      check("username", "User Name is required").notEmpty(),
+      check("password", "password is required").exists(),
+    ],
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
       }
+      try {
+        const { userEmailPhone, password } = req.body;
+        var givenroll = "basic";
+        if (req.body.roll != undefined) {
+          givenroll = req.body.roll;
+        }
       const user = await USER.findOne({
         $or: [
           {

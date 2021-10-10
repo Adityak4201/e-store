@@ -33,6 +33,9 @@ const Seller_Profile = Schema({
     about: { type: String },
     return_policy: { type: String },
   },
+  extra_charges : {
+
+  },
   message: { type: Array, default: [] },
   reviews: { type: Array, default: [] },
   noti: { type: Array, default: [] },
