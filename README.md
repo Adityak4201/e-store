@@ -257,3 +257,84 @@ req.body.id,
 and other edited parameters
 ```
 - edit details of a product
+
+### ```POST /active/```
+```
+req.body.id,
+req.body.active,
+
+```
+- active a product
+
+### ```POST /updateStatus/```
+```
+  const { order_id, status } = req.body;
+
+```
+- update a order status
+
+## RODUCTS.JS Requests
+
+### ```GET /getProductsByLimit```
+```
+req.query.page
+req.query.limit
+```
+- return limited products for a page . 
+
+### ```GET /IdProduct/:id```
+
+- return  products for a id. 
+
+### ```GET /SellerProduct/:username```
+
+- return  products of a particular Seller user. 
+
+### ```GET /getOtherProduct```
+
+- return  products of a all other Seller user than himself
+
+### ```POST /AddToCart```
+```
+    const { product_id, count } = req.body;
+```
+- add items to the cart of a user
+
+### ```POST /RemoveFromCart```
+```
+    const { product_id, count } = req.body;
+```
+- remove items to the cart of a user
+
+### ```POST /buyProduct```
+```
+ all detils in shoppingModel.js Model
+```
+- buy Items
+
+### ```POST /addProductReview```
+```
+    const { product_id, ratings, comments } = req.body;
+
+```
+
+- add review of the item
+
+
+### ```POST /getRatings```
+```
+    const { product_id } = req.body;
+
+
+```
+
+- get ratings of a product 
+
+### ```POST /updateProductReview```
+```
+    const { product_id, ratings, comments } = req.body;
+
+
+```
+
+- update review of a product 
