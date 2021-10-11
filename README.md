@@ -337,4 +337,19 @@ req.query.limit
 
 ```
 
-- update review of a product 
+- update review of a product
+
+
+
+## VISITOR.JS Requests
+
+### ```POST /addVisitor```
+```
+  const { seller_username, name, product_id } = req.body;
+
+```
+- add a visitor when a user visit a product .  
+
+### ```GET /getVisitors```
+
+- get all visitor of a seeler. 
