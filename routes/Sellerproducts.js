@@ -80,6 +80,7 @@ router.route("/Add").post(auth, (req, res) => {
     inventory,
     Item_Returnable,
     category,
+    SKU
   } = req.body;
   const Item = Product({
     productname,
@@ -92,6 +93,7 @@ router.route("/Add").post(auth, (req, res) => {
     inventory,
     Item_Returnable,
     category,
+    SKU
   });
   Item.save()
     .then((result) => {
@@ -100,6 +102,24 @@ router.route("/Add").post(auth, (req, res) => {
     .catch((err) => {
       console.log(err), res.json({ err: err });
     });
+});
+
+router.route("/addSKU/:id").post(auth, (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "create a seller account to view" });
+  }
+  Product.findOneAndUpdate({ _id: req.params.id }, {SKU : req.body.SKU}, (err, result) => {
+    if (err) return res.json(err);
+    return res.json(result);
+  });
+});
+
+
+router.route("/getSKU/:id").get(auth, (req, res) => {
+  Product.findOne({ _id: req.params.id }, (err, result) => {
+    if (err) return res.json(err);
+    return res.json(result);
+  });
 });
 
 router.route("/getOwnProducts").get(auth, (req, res) => {

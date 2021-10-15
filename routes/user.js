@@ -26,31 +26,6 @@ router.get("/getUser/:id", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-router.post("/getUser/", auth, async (req, res) => {
-  try {
-    USER.findOne({ _id: req.user.id }, function (err, response) {
-      if (err) console.log(err);
-      res.send(response);
-    }).select("-_id -password");
-  } catch (error) {
-    res.status(403).send(error);
-    console.log(error);
-  }
-});
-
-router
-  .route("/login")
-  .post(
-    [
-      check("username", "User Name is required").notEmpty(),
-      check("password", "password is required").exists(),
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-=======
 router.post(
   "/login",
   [
@@ -70,7 +45,6 @@ router.post(
       var givenroll = "basic";
       if (req.body.roll != undefined) {
         givenroll = req.body.roll;
->>>>>>> 4bceb5fbf4038d8fac352f3f70a3a10a8c4dcb58
       }
       const user = await USER.findOne({
         $or: [
