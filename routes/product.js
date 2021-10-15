@@ -134,6 +134,7 @@ router.route("/IdProduct/:id").get((req, res) => {
   });
 });
 
+
 router.route("/SellerProduct/:username").get((req, res) => {
   Product.find(
     { username: req.params.username, active: true },
