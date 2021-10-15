@@ -57,36 +57,36 @@ router
         if (req.body.roll != undefined) {
           givenroll = req.body.roll;
         }
-      const user = await USER.findOne({
-        $or: [
-          {
-            email: userEmailPhone,
-          },
-          {
-            phone: userEmailPhone,
-          },
-          {
-            username: userEmailPhone,
-          },
-        ],
-      });
-      // console.log("Hello");
-      if (!user) throw "User not found";
-      let ismatch = await bcrypt.compare(password, user.password);
-      if (ismatch) {
-        let token = await user.generateAuthToken(givenroll);
-        console.log(token);
-        const cleanUser = getCleanUser(user);
-        res.send({ user: cleanUser, token });
-      } else {
-        throw "Password is incorrect";
+        const user = await USER.findOne({
+          $or: [
+            {
+              email: userEmailPhone,
+            },
+            {
+              phone: userEmailPhone,
+            },
+            {
+              username: userEmailPhone,
+            },
+          ],
+        });
+        // console.log("Hello");
+        if (!user) throw "User not found";
+        let ismatch = await bcrypt.compare(password, user.password);
+        if (ismatch) {
+          let token = await user.generateAuthToken(givenroll);
+          console.log(token);
+          const cleanUser = getCleanUser(user);
+          res.send({ user: cleanUser, token });
+        } else {
+          throw "Password is incorrect";
+        }
+      } catch (error) {
+        // console.log(error);
+        return res.status(401).json({ error });
       }
-    } catch (error) {
-      // console.log(error);
-      return res.status(401).json({ error });
     }
-  }
-);
+  );
 
 router
   .route("/register")
@@ -145,11 +145,9 @@ router
             })
             .catch((err) => {
               // console.log(Object.keys(err.keyPattern));
-              return res
-                .status(403)
-                .json({
-                  error: `${Object.keys(err.keyPattern)[0]} already exists`,
-                });
+              return res.status(403).json({
+                error: `${Object.keys(err.keyPattern)[0]} already exists`,
+              });
             });
         } else {
           return res.status(405).json({ error: "password doesn't match!!" });
