@@ -119,7 +119,6 @@ router.route("/products").get(async (req, res) => {
 router.route("/getProductsByLimit").get(async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
-
   const startindex = (page - 1) * limit;
   const posts = await Product.find({ active: true })
     .limit(limit)
@@ -134,6 +133,7 @@ router.route("/IdProduct/:id").get((req, res) => {
     return res.send(result);
   });
 });
+
 
 router.route("/SellerProduct/:username").get((req, res) => {
   Product.find(
@@ -250,7 +250,7 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
     };
     const user = await USERProfile.findOne(query);
 
-    if (!user) throw "Give Product is missing in the cart";
+    if (!user) throw "Given Product is missing in the cart";
     else if (
       user.cart.filter((c) => c.product_id === product_id)[0].product_count <=
       count

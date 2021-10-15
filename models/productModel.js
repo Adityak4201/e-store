@@ -32,6 +32,9 @@ const Product = Schema({
   inventory: {
     type: Number,
   },
+  SKU: {
+    type: String,
+  },
   Item_Returnable: { type: Number },
   reviews: { type: Array, default: [] },
   active : {type: Boolean, default : false}
