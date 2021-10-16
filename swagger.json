@@ -1,0 +1,311 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "E-Store Backend",
+    "description": "Backend API for E-Store, handles MongoDB Data"
+  },
+  "host": "e-store-backend.herokuapp.com",
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Registers the user in and generates JWT",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": [
+                "email",
+                "password",
+                "username",
+                "phone",
+                "confpassword",
+                "roll"
+              ],
+              "$ref": "#/definitions/User"
+            },
+            "examples": {
+              "application/json": {
+                "msg": "user succesfully saved",
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTZhYjhkNzk4MTBjZjAwMTZkOTliNGMiLCJyb2xsIjoiYWRtaW4iLCJpYXQiOjE2MzQzODQwODd9.qMHdGrjarYSOzfcB3_eeOL0ggfSvtibW7mPKehh3MbA"
+              }
+            }
+          },
+          "400": {
+            "description": "BAD BODY",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "TOKEN NOT GENERATED",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "EMAIL NOT SENT",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Register Body",
+            "in": "body",
+            "description": "Form Body for User Registration",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/User",
+              "example": {
+                "email": "newfornow@gmail.com",
+                "password": "seller",
+                "username": "newnew",
+                "confpassword": "seller",
+                "roll": "admin",
+                "phone": "8080080800"
+              }
+            }
+          }
+        ],
+        "produces": ["application/json"]
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Logs the user in and generates JWT",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "properties": {
+                "user": {
+                  "roll": {
+                    "type": "string",
+                    "description": "Role of the user"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "Username of the user"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email of the user"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "Phone of the user"
+                  },
+                  "_id": {
+                    "type": "string",
+                    "description": "MongoDB ID of the user"
+                  }
+                },
+                "token": {
+                  "type": "string",
+                  "description": "Auth token for user"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "user": {
+                  "roll": "admin",
+                  "status": "unapproved",
+                  "_id": "61618a9f8a008c05ff247986",
+                  "email": "temporary@gmail.com",
+                  "phone": "9393939393"
+                },
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTYxOGE5ZjhhMDA4YzA1ZmYyNDc5ODYiLCJyb2xsIjoiYmFzaWMiLCJpYXQiOjE2MzQzODUxNzZ9.nW_6iWU07xNHafWycb9jfyeBoLIvzGjIwzqkl6dybpM"
+              }
+            }
+          },
+          "400": {
+            "description": "BAD BODY",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "INVALID CREDENTIALS",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Login",
+            "in": "body",
+            "description": "Gets cedentials, matches and gives jwt if correct",
+            "schema": {
+              "type": "object",
+              "required": ["userEmailPhone", "password"],
+              "properties": {
+                "userEmailPhone": {
+                  "type": "string",
+                  "description": "User E-mail or Phone or Username"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "User Password"
+                }
+              }
+            }
+          }
+        ],
+        "produces": ["application/json"]
+      }
+    },
+    "/auth/register-admin": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Register the admin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": ["email", "password"],
+              "$ref": "#/definitions/Admin"
+            },
+            "examples": {
+              "application/json": {
+                "userType": "ADMIN",
+                "_id": "60b5ae5f9542ebd58c273d84",
+                "email": "name@email.com",
+                "password": "$argon2i$v=19$m=4096,t=3,p=1$WCSUJVT1epEz6tWq42RHxw$9mdMrxf4EsknjcZiBbr4H2xLFcij56dT1cYig2gmCvo",
+                "createdAt": "2021-06-01T03:49:51.501Z",
+                "updatedAt": "2021-06-01T03:49:51.501Z",
+                "__v": 0
+              }
+            }
+          },
+          "400": {
+            "description": "BAD BODY",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Register Admin Body",
+            "in": "body",
+            "description": "Form Body for User Registration",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/AdminRegisterInput",
+              "example": {
+                "email": "name@email.com",
+                "password": "verySecurePassword@123"
+              }
+            }
+          }
+        ],
+        "produces": ["application/json"]
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Stores username"
+        },
+        "email": {
+          "type": "string",
+          "description": "Stores Email of the user"
+        },
+        "password": {
+          "type": "string",
+          "description": "Stores Hashed Password of the user"
+        },
+        "confpassword": {
+          "type": "string",
+          "description": "Stores Confirmed Password of the user"
+        },
+        "roll": {
+          "type": "string",
+          "enum": ["basic", "admin"],
+          "default": "basic"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of user"
+        }
+      }
+    },
+    "Admin": {
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Stores username"
+        },
+        "email": {
+          "type": "string",
+          "description": "Stores Email of the user"
+        },
+        "password": {
+          "type": "string",
+          "description": "Stores Hashed Password of the user"
+        },
+        "confpassword": {
+          "type": "string",
+          "description": "Stores Confirmed Password of the user"
+        },
+        "roll": {
+          "type": "string",
+          "enum": ["basic", "admin"],
+          "default": "basic"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of user"
+        }
+      }
+    },
+
+    "AdminRegisterInput": {
+      "required": ["email", "password"],
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Stores Email of the user"
+        },
+        "password": {
+          "type": "string",
+          "description": "Stores Hashed Password of the user"
+        }
+      }
+    },
+    "Error": {
+      "properties": {
+        "errors": {
+          "type": "string",
+          "description": "Gives detail of error"
+        }
+      }
+    }
+  },
+  "schemes": ["https"],
+  "securityDefinitions": {
+    "JWT Auth": {
+      "type": "apiKey",
+      "description": "JWT Based Authentication",
+      "name": "x-auth-token",
+      "in": "header"
+    }
+  },
+  "consumes": ["application/json"],
+  "produces": ["application/json"]
+}
