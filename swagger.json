@@ -152,6 +152,12 @@
                 "password": {
                   "type": "string",
                   "description": "User Password"
+                },
+                "roll": {
+                  "type": "string",
+                  "enum": ["admin", "basic"],
+                  "default": "basic",
+                  "description": "Role of the user"
                 }
               }
             }
