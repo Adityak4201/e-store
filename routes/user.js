@@ -9,6 +9,7 @@ const sendmail = require("../middleware/sendmail");
 const { text } = require("body-parser");
 const CryptoJS = require("crypto-js");
 const { getCleanUser } = require("../utils/utils");
+const authBeforeVerify = require("../middleware/authBeforeVerify");
 const router = express.Router();
 router.get("/", auth, async (req, res) => {
   res.send({ msg: "Welcome user" + req.user.username });
@@ -153,7 +154,7 @@ router.route("/getAccType/:username").get(async (req, res) => {
   }).select("-_id");
 });
 
-router.route("/getVerifyMail").post(auth, async (req, res) => {
+router.route("/getVerifyMail").post(authBeforeVerify, async (req, res) => {
   try {
     subject = "Verify Your Account";
     hashPass = await CryptoJS.AES.encrypt(
@@ -166,7 +167,8 @@ router.route("/getVerifyMail").post(auth, async (req, res) => {
     mytext = `Click here to verify <a href='http://localhost:3000/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
     to = req.user.email;
     var mailResponse = await sendmail(subject, mytext, to);
-    res.status(200).send({ msg: "user succesfully saved", mail: mailResponse });
+    // console.log(mailResponse);
+    res.status(200).json({ msg: "user succesfully saved", mail: mailResponse });
   } catch (error) {
     return res.status(404).json({ error });
   }
