@@ -49,8 +49,8 @@ const ShopProduct = Schema({
   },
   status: {
     type: String,
-    enum: ["ordered", "accepted", "rejected", "cancelled", "shipped", "packed"],
-    default: "ordered",
+    enum: ["pending", "accepted", "rejected","shipped", "packed","delivered","returned","cancelled"],
+    default: "pending",
   },
 
   trackorder: {

@@ -92,7 +92,7 @@ router
   .route("/register")
   .post(
     [
-      check("username", "Name is required").notEmpty(),
+      check("username", "Userame is required").notEmpty(),
       check("email", "Please include a valid email").isEmail(),
       check(
         "password",
