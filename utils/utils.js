@@ -4,6 +4,7 @@ function getCleanUser(user) {
     status: user.status,
     _id: user._id,
     email: user.email,
+    username: user.username,
     phone: user.phone,
   };
 }

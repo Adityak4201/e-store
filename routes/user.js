@@ -59,22 +59,20 @@ router.post(
           },
         ],
       });
-      if (user) {
-        let ismatch = await bcrypt.compare(password, user.password);
-        if (ismatch) {
-          let token = await user.generateAuthToken(givenroll);
-          console.log(token);
-          const cleanUser = getCleanUser(user);
-          res.send({ user: cleanUser, token });
-        } else {
-          res.json({ msg: "password incorrect" });
-        }
+      // console.log("Hello");
+      if (!user) throw "User not found";
+      let ismatch = await bcrypt.compare(password, user.password);
+      if (ismatch) {
+        let token = await user.generateAuthToken(givenroll);
+        console.log(token);
+        const cleanUser = getCleanUser(user);
+        res.send({ user: cleanUser, token });
       } else {
-        res.send("no user found");
+        throw "Password is incorrect";
       }
     } catch (error) {
-      console.log(error);
-      res.status(401).send(error);
+      // console.log(error);
+      return res.status(401).json({ error });
     }
   }
 );
