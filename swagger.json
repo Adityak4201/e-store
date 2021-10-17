@@ -5,7 +5,18 @@
     "title": "E-Store Backend",
     "description": "Backend API for E-Store, handles MongoDB Data"
   },
-  "host": "e-store-backend.herokuapp.com",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "host": "3000-rose-tyrannosaurus-qyfkcmx1.ws-us17.gitpod.io",
+  "securityDefinitions": {
+    "x-auth-token": {
+      "type": "apiKey",
+      "description": "JWT Based Authentication",
+      "name": "x-auth-token",
+      "in": "header"
+    }
+  },
   "paths": {
     "/user/register": {
       "post": {
@@ -166,37 +177,34 @@
         "produces": ["application/json"]
       }
     },
-    "/auth/register-admin": {
+    "/user/getVerifyMail": {
       "post": {
-        "tags": ["Admin"],
-        "summary": "Register the admin",
+        "tags": ["User"],
+        "summary": "Get Verification Mail",
+        "security": {
+          "x-auth-token": []
+        },
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "required": ["email", "password"],
-              "$ref": "#/definitions/Admin"
+              "required": ["password"],
+              "$ref": "#/definitions/User"
             },
             "examples": {
               "application/json": {
-                "userType": "ADMIN",
-                "_id": "60b5ae5f9542ebd58c273d84",
-                "email": "name@email.com",
-                "password": "$argon2i$v=19$m=4096,t=3,p=1$WCSUJVT1epEz6tWq42RHxw$9mdMrxf4EsknjcZiBbr4H2xLFcij56dT1cYig2gmCvo",
-                "createdAt": "2021-06-01T03:49:51.501Z",
-                "updatedAt": "2021-06-01T03:49:51.501Z",
-                "__v": 0
+                "msg": "user succesfully saved"
               }
             }
           },
-          "400": {
-            "description": "BAD BODY",
+          "401": {
+            "description": "TOKEN IS MISSING",
             "schema": {
               "$ref": "#/definitions/Error"
             }
           },
-          "500": {
-            "description": "Server Error",
+          "404": {
+            "description": "BAD BODY/EMAIL NOT SENT",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -302,16 +310,5 @@
         }
       }
     }
-  },
-  "schemes": ["https"],
-  "securityDefinitions": {
-    "JWT Auth": {
-      "type": "apiKey",
-      "description": "JWT Based Authentication",
-      "name": "x-auth-token",
-      "in": "header"
-    }
-  },
-  "consumes": ["application/json"],
-  "produces": ["application/json"]
+  }
 }
