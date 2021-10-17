@@ -126,7 +126,7 @@ router
               hashPass = await encodeURIComponent(hashPass);
 
               // console.log("----------", hashPass);
-              mytext = `Click here to verify <a href='http://localhost:3000/user/verify?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
+              mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
               to = req.body.email;
               var mailResponse = await sendmail(subject, mytext, to);
               res
@@ -134,14 +134,18 @@ router
                 .send({ msg: "user succesfully saved", token: token });
             })
             .catch((err) => {
-              // console.log("error", err);
-              res.status(403).send({ error: err });
+              // console.log(Object.keys(err.keyPattern));
+              return res
+                .status(403)
+                .json({
+                  error: `${Object.keys(err.keyPattern)[0]} already exists`,
+                });
             });
         } else {
-          res.send("password doesn't match!!");
+          return res.status(405).json({ error: "password doesn't match!!" });
         }
       } catch (error) {
-        console.log("error", error);
+        // console.log("error", error);
         res.status(401).send({ error: error });
       }
     }
@@ -164,7 +168,7 @@ router.route("/getVerifyMail").post(authBeforeVerify, async (req, res) => {
     // console.log("before----------", hashPass);
     hashPass = await encodeURIComponent(hashPass);
     // console.log("----------", hashPass);
-    mytext = `Click here to verify <a href='http://localhost:3000/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
+    mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
     to = req.user.email;
     var mailResponse = await sendmail(subject, mytext, to);
     // console.log(mailResponse);
