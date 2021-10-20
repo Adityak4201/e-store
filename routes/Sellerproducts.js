@@ -80,7 +80,8 @@ router.route("/Add").post(auth, (req, res) => {
     inventory,
     Item_Returnable,
     category,
-    SKU
+    active,
+    SKU,
   } = req.body;
   const Item = Product({
     productname,
@@ -90,11 +91,13 @@ router.route("/Add").post(auth, (req, res) => {
     price,
     sellprice,
     variation,
+    active,
     inventory,
     Item_Returnable,
     category,
-    SKU
+    SKU,
   });
+
   Item.save()
     .then((result) => {
       res.json({ data: result });
@@ -108,12 +111,15 @@ router.route("/addSKU/:id").post(auth, (req, res) => {
   if (req.user.roll != "admin") {
     return res.status(404).send({ msg: "create a seller account to view" });
   }
-  Product.findOneAndUpdate({ _id: req.params.id }, {SKU : req.body.SKU}, (err, result) => {
-    if (err) return res.json(err);
-    return res.json(result);
-  });
+  Product.findOneAndUpdate(
+    { _id: req.params.id },
+    { SKU: req.body.SKU },
+    (err, result) => {
+      if (err) return res.json(err);
+      return res.json(result);
+    }
+  );
 });
-
 
 router.route("/getSKU/:id").get(auth, (req, res) => {
   Product.findOne({ _id: req.params.id }, (err, result) => {
@@ -190,7 +196,7 @@ router.route("/editProductDetails").post(auth, (req, res) => {
   );
 });
 
-router.route("/active/").post(auth, (req, res) => {
+router.route("/active").post(auth, (req, res) => {
   Product.findOneAndUpdate(
     { _id: req.body.id },
     {
@@ -200,6 +206,22 @@ router.route("/active/").post(auth, (req, res) => {
     },
     (err, result) => {
       if (err) return res.json(err);
+      return res.json({ data: result });
+    }
+  );
+});
+
+//Only to be used for testing purpose
+router.get("/allActive", auth, (req, res) => {
+  Product.updateMany(
+    {},
+    {
+      $set: {
+        active: true,
+      },
+    },
+    (err, result) => {
+      if (err) return res.status(403).json({ error: err });
       return res.json({ data: result });
     }
   );
@@ -219,8 +241,8 @@ router.post("/updateStatus", auth, async (req, res) => {
     { status },
     { new: true, runValidators: true }
   )
-    .then( async (updatedOrder) => {
-      if (!updatedOrder){
+    .then(async (updatedOrder) => {
+      if (!updatedOrder) {
         return res
           .status(402)
           .json({ error: "Order has been rejected/cancelled" });
