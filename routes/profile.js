@@ -340,4 +340,30 @@ router.post("/cancelOrder", auth, async (req, res) => {
     });
 });
 
+router.post("/filterShopsByLocation", async (req, res) => {
+  try {
+    const { country, state, city } = req.body;
+    // console.log(country, state, city);
+    let shopsByLocation = [];
+    if (country === undefined && state === undefined && city === undefined)
+      return res
+        .status(403)
+        .json({ error: "Select a location to show results" });
+    if (state === undefined && city === undefined)
+      shopsByLocation = await SellerProfile.find({ country });
+    else if (city === undefined)
+      shopsByLocation = await SellerProfile.find({
+        $and: [{ country }, { state }],
+      });
+    else
+      shopsByLocation = await SellerProfile.find({
+        $and: [{ country }, { state }, { city }],
+      });
+    if (shopsByLocation.length === 0) throw "No Shops in this Location";
+    return res.json({ shops: shopsByLocation });
+  } catch (e) {
+    return res.status(402).send({ error: e });
+  }
+});
+
 module.exports = router;
