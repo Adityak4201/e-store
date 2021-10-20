@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
     if (user != null) {
       if (user.status !== "approved")
         return res
-          .status(403)
+          .status(406)
           .json({ error: "Please verify yourself first!!!" });
       next();
     } else {

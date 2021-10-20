@@ -3,18 +3,22 @@ const nodemailer = require("nodemailer");
 var sendmail = async function (subject, mytext, sendto) {
   var string = "G-Mail Sending";
   var transport = await nodemailer.createTransport({
+    host: "smtp.gmail.com",
     service: "gmail",
+    port: 587,
+    secure: true,
     auth: {
       user: "piyushpuniya2001@gmail.com",
       pass: "ydqdqwtqercbonam",
     },
   });
+  // console.log(mytext);
   const message = {
     from: "piyushpuniya2001@gmail.com",
     // to: `info@redpositive.in`,
     to: `${sendto}`,
     subject: `${subject}`,
-    text: `${mytext}`,
+    // text: `${mytext}`,
     html: `${mytext}`,
     // attachments: [
     //     { // Use a URL as an attachment
@@ -30,12 +34,11 @@ var sendmail = async function (subject, mytext, sendto) {
         console.log(err);
         string = "Some err occured plz try after some time";
       }
-      console.log("mail infi", info);
+      // console.log("mail infi", info);
       string = "Email Sent! Check Now.";
 
       return string;
     });
-    
   } catch (error) {
     console.log(error);
     return error;

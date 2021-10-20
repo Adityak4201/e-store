@@ -128,18 +128,19 @@ router.route("/getSellersCategory").get(auth, (req, res) => {
 });
 
 router.route("/filterBySellerCategory").get(auth, (req, res) => {
-  const categories = req.body.categories;
+  const category = req.body.category;
   try {
     SellerProfile.find(
-      { bussiness_category: { $in: categories } },
+      { bussiness_category: category },
       "_id bussiness_category",
       function (err, result) {
-        if (err) return res.status(403).send(err);
+        if (err) return res.status(403).json({ error: err });
         return res.json(result);
       }
     );
   } catch (err) {
-    console.log(err), res.json({ err: err });
+    console.log(err);
+    return res.status(402).json({ error: err });
   }
 });
 
