@@ -127,7 +127,7 @@ router.route("/getSellersCategory").get(auth, (req, res) => {
   }
 });
 
-router.route("/filterBySellerCategory").get(auth, (req, res) => {
+router.route("/filterBySellerCategory").post(auth, (req, res) => {
   const category = req.body.category;
   try {
     SellerProfile.find(
