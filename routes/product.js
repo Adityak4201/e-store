@@ -17,95 +17,6 @@ const sellerModel = require("../models/sellerModel");
 const productModel = require("../models/productModel");
 app.use(express.static("uploads"));
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     // cb(null, "./noncompress");
-//     cb(null, "./uploads/products");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, req.params.id + path.extname(file.originalname));
-//   },
-// });
-
-// // path.extname(file.originalname)
-// const upload = multer({
-//   storage: storage,
-// });
-
-// router.route("/").get(auth, (req, res) => {
-//   if (req.user.roll != "admin") {
-//     return res
-//       .status(404)
-//       .send({ msg: "You can't add profile create a seller account" });
-//   }
-//   res.send(req.user.username);
-// });
-
-// router
-//   .route("/add/coverImage/:id")
-//   .patch(auth, upload.single("coverImage"), async (req, res) => {
-//     console.log("upload image");
-//     // await compress(req.file.filename);
-
-//     Product.findOneAndUpdate(
-//       { _id: req.params.id },
-//       {
-//         $set: {
-//           coverImage: req.file.filename,
-//         },
-//       },
-//       { new: true },
-//       (err, result) => {
-//         if (err) {
-//           console.log(err);
-//         }
-//         return res.json(result);
-//       }
-//     );
-//   });
-
-// router.post("/Add", auth, (req, res) => {
-//   if (req.user.roll != "admin") {
-//     return res
-//       .status(404)
-//       .send({ msg: "You can't add profile create a seller account" });
-//   }
-//   // console.log(req.user);
-//   // console.log(req.body);
-//   const { username } = req.user;
-//   const {
-//     productname,
-//     productmetadescription,
-//     productdescription,
-//     price,
-//     sellprice,
-//     variation,
-//     inventory,
-//     Item_Returnable,
-//     category,
-//     active,
-//   } = req.body;
-//   const Item = Product({
-//     productname,
-//     username,
-//     productmetadescription,
-//     productdescription,
-//     price,
-//     sellprice,
-//     variation,
-//     inventory,
-//     Item_Returnable,
-//     category,
-//     active,
-//   });
-//   Item.save()
-//     .then((result) => {
-//       res.json({ data: result });
-//     })
-//     .catch((err) => {
-//       console.log(err), res.json({ err: err });
-//     });
-// });
 
 router.route("/products").get(async (req, res) => {
   const page = parseInt(req.query.page);
@@ -304,6 +215,8 @@ router.route("/filterProductByCategory").post(async (req, res) => {
     return res.status(402).send({ error: e });
   }
 });
+
+
 
 router.post("/addProductReview", auth, async (req, res) => {
   if (req.user.roll != "basic") {

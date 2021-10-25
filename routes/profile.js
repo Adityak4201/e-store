@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Profile = require("../models/profileModel");
 const ShopProduct = require("../models/shoppingModel");
+const Product = require("../models/productModel");
 const SellerProfile = require("../models/sellerModel");
 const message_Seller = require("../models/messageModel");
 const auth = require("../middleware/auth");
@@ -132,12 +133,43 @@ router.route("/filterBySellerCategory").get(auth, (req, res) => {
   try {
     SellerProfile.find(
       { bussiness_category: category },
-      "_id bussiness_category",
       function (err, result) {
         if (err) return res.status(403).json({ error: err });
         return res.json(result);
       }
     );
+  } catch (err) {
+    console.log(err);
+    return res.status(402).json({ error: err });
+  }
+});
+
+router.route("/getProductsByCategory").get( async (req, res) => {
+  const category = req.body.category;
+  try {
+
+    const products = await Product.find({ category: category });
+
+    console.log(products);
+
+    return res.json({products : products})
+
+  } catch (err) {
+    console.log(err);
+    return res.status(402).json({ error: err });
+  }
+});
+
+router.route("/getShopsByCategory").get( async (req, res) => {
+  const category = req.body.category;
+  try {
+
+    const shops = await SellerProfile.find({ category: category });
+
+    console.log(shops);
+
+    return res.json({shops : shops })
+
   } catch (err) {
     console.log(err);
     return res.status(402).json({ error: err });
