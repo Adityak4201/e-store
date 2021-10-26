@@ -15,8 +15,11 @@ const user = userschema({
   },
   username: {
     type: String,
-    required: true,
     unique: true,
+  },
+  profile_username: {
+    type: String,
+    required: true,
   },
   email: {
     type: String,

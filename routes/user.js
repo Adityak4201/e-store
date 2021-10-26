@@ -93,6 +93,7 @@ router
   .post(
     [
       check("username", "Userame is required").notEmpty(),
+      check("phone", "phone is required").notEmpty(),
       check("email", "Please include a valid email").isEmail(),
       check(
         "password",
@@ -114,9 +115,28 @@ router
           givenroll = req.body.roll;
         }
         if (password === cpassword) {
+          const allUsername = await USER.find({ profile_username : req.body.username }, "username").select("-_id").exec();
+
+          console.log("allusernames " , allUsername);
+
+          var username = "";
+          loop = true;
+          while (loop) {
+            username = req.body.username + Math.floor(100000 + Math.random() * 900000);
+
+            if(!(allUsername.some(i => i.username.includes(username)))){
+              loop = false;
+            }
+          }
+
+          // res
+          // .status(200)
+          // .send({ msg: allUsername , finalusername : username});
+
           const userdata = new USER({
             roll: givenroll,
-            username: req.body.username,
+            username: username,
+            profile_username: req.body.username,
             email: req.body.email,
             password: req.body.password,
             phone: req.body.phone,
@@ -141,7 +161,7 @@ router
               var mailResponse = await sendmail(subject, mytext, to);
               res
                 .status(200)
-                .send({ msg: "user succesfully saved", token: token });
+                .send({ msg: "user succesfully saved", token: token , userdetails : userdata });
             })
             .catch((err) => {
               // console.log(Object.keys(err.keyPattern));
