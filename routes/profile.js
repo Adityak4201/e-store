@@ -158,6 +158,39 @@ router.route("/getProductsByCategory").get(async (req, res) => {
   }
 });
 
+router.post("/search", async (req, res) => {
+  const { str } = req.body;
+  try {
+    const shops = await SellerProfile.find({
+      $or: [
+        {
+          bussiness_name: { $regex: str },
+        },
+        {
+          bussiness_category: { $regex: str },
+        },
+      ],
+    });
+
+    const products = await Product.find({
+      $or: [
+        {
+          productname: { $regex: str },
+        },
+        {
+          category: { $regex: str },
+        },
+      ],
+    });
+
+    if (!shops.length && !products.length) throw "No Matches Found";
+
+    return res.json({ shops, products });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
 router.route("/getShopsByCategory").get(async (req, res) => {
   const category = req.body.category;
   try {
