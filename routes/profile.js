@@ -117,16 +117,16 @@ router.route("/editAddress").post(auth, (req, res) => {
   );
 });
 
-router.route("/getSellersCategory").get(auth, (req, res) => {
-  try {
-    SellerProfile.find({}, "bussiness_category", function (err, result) {
-      if (err) return res.status(403).send(err);
-      return res.json(result);
-    }).distinct("bussiness_category");
-  } catch (error) {
-    console.log(err), res.json({ err: err });
-  }
-});
+// router.route("/getSellersCategory").get(async (req, res) => {
+//   try {
+//     await SellerProfile.find({}, "bussiness_category", function (err, result) {
+//       if (err) return res.status(403).send(err);
+//       return res.json(result);
+//     }).distinct("bussiness_category");
+//   } catch (error) {
+//     console.log(err), res.json({ err: err });
+//   }
+// });
 
 router.route("/filterBySellerCategory").post(auth, (req, res) => {
   const category = req.body.category;
@@ -144,32 +144,28 @@ router.route("/filterBySellerCategory").post(auth, (req, res) => {
   }
 });
 
-router.route("/getProductsByCategory").get( async (req, res) => {
+router.route("/getProductsByCategory").get(async (req, res) => {
   const category = req.body.category;
   try {
-
     const products = await Product.find({ category: category });
 
     console.log(products);
 
-    return res.json({products : products})
-
+    return res.json({ products: products });
   } catch (err) {
     console.log(err);
     return res.status(402).json({ error: err });
   }
 });
 
-router.route("/getShopsByCategory").get( async (req, res) => {
+router.route("/getShopsByCategory").get(async (req, res) => {
   const category = req.body.category;
   try {
-
     const shops = await SellerProfile.find({ category: category });
 
     console.log(shops);
 
-    return res.json({shops : shops })
-
+    return res.json({ shops: shops });
   } catch (err) {
     console.log(err);
     return res.status(402).json({ error: err });

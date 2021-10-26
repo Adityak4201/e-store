@@ -17,7 +17,6 @@ const Seller_Profile = Schema({
   },
   phone: {
     type: Number,
-    required: true,
   },
   address: { type: Array, default: [] },
   country: {
@@ -33,14 +32,12 @@ const Seller_Profile = Schema({
     about: { type: String },
     return_policy: { type: String },
   },
-  extra_charges : {
-    type: Array, default: []
+  extra_charges: {
+    type: Array,
+    default: [],
   },
-  message: { type: Array, default: [] },
   reviews: { type: Array, default: [] },
   noti: { type: Array, default: [] },
-  staff: { type: Array, default: [] },
-  visitors: { type: Array, default: [] },
 });
 
 module.exports = mongoose.model("Seller_Profile", Seller_Profile);
