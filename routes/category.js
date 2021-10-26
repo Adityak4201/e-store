@@ -40,7 +40,7 @@ router.post("/category", upload.single("image"), async (req, res) => {
   await categoryData
     .save()
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       return res.json({ category: response });
     })
     .catch((err) => {
@@ -58,7 +58,10 @@ router.post("/category", upload.single("image"), async (req, res) => {
 
 router.get("/category", async (req, res) => {
   try {
-    const categories = await Category.find({});
+    const categories = await Category.find(
+      {},
+      { category_name: 1, category_image: 1, _id: 0 }
+    );
     if (!categories) throw "No Categories";
     // console.log(categories);
     return res.json({ categories });
