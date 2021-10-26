@@ -93,7 +93,6 @@ router
   .post(
     [
       check("username", "Userame is required").notEmpty(),
-      check("phone", "phone is required").notEmpty(),
       check("email", "Please include a valid email").isEmail(),
       check(
         "password",

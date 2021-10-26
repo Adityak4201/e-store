@@ -128,7 +128,7 @@ router.route("/getSellersCategory").get(auth, (req, res) => {
   }
 });
 
-router.route("/filterBySellerCategory").get(auth, (req, res) => {
+router.route("/filterBySellerCategory").post(auth, (req, res) => {
   const category = req.body.category;
   try {
     SellerProfile.find(
@@ -370,6 +370,32 @@ router.post("/cancelOrder", auth, async (req, res) => {
       if (error.errors) return res.status(403).json({ error: error.errors });
       else res.status(404).json({ error: "No order found" });
     });
+});
+
+router.post("/filterShopsByLocation", async (req, res) => {
+  try {
+    const { country, state, city } = req.body;
+    // console.log(country, state, city);
+    let shopsByLocation = [];
+    if (country === undefined && state === undefined && city === undefined)
+      return res
+        .status(403)
+        .json({ error: "Select a location to show results" });
+    if (state === undefined && city === undefined)
+      shopsByLocation = await SellerProfile.find({ country });
+    else if (city === undefined)
+      shopsByLocation = await SellerProfile.find({
+        $and: [{ country }, { state }],
+      });
+    else
+      shopsByLocation = await SellerProfile.find({
+        $and: [{ country }, { state }, { city }],
+      });
+    if (shopsByLocation.length === 0) throw "No Shops in this Location";
+    return res.json({ shops: shopsByLocation });
+  } catch (e) {
+    return res.status(402).send({ error: e });
+  }
 });
 
 module.exports = router;

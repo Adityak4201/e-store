@@ -195,9 +195,9 @@ const { s_username } = req.body;
 
 ### `POST /addAbout`
 
-```
-  const { about, return_policy } = req.body;
-```
+=======
+
+### `GET /viewStaff`
 
 - used for adding about and return policy of a seller profile
 
@@ -213,7 +213,12 @@ const { s_username } = req.body;
 
 ## SELLERPRODUCTS.JS Requests
 
-### ```POST /Add```
+### `POST /Add`
+
+=======
+
+### `POST /addAbout`
+
 ```
     productname,
     productmetadescription,
@@ -226,93 +231,112 @@ const { s_username } = req.body;
     category,
 ```
 
-- used for creating product of a seller user . 
+- used for creating product of a seller user .
 
+### `GET /showAbout`
 
-### ```PATCH /add/coverImage/:id```
+### `PATCH /add/coverImage/:id`
+
 ```
 req.file
 ```
+
 - used for adding product img of a seller user .
 
- 
-### ```GET /getOwnProducts```
+### `GET /getOwnProducts`
 
 - returns all products of a seller .
 
-### ``` GET /getByLimit```
+### ` GET /getByLimit`
+
 ```
 req.query.page
 req.query.limit
 ```
+
 - return limited products for a page
 
-### ```DELETE /deleteSellerProduct/:id```
+### `DELETE /deleteSellerProduct/:id`
 
 - delete a product with some id of a seller
 
-### ```POST /editProductDetails```
+### `POST /editProductDetails`
+
 ```
 req.body.id,
 and other edited parameters
 ```
+
 - edit details of a product
 
-### ```POST /active/```
+### `POST /active/`
+
 ```
 req.body.id,
 req.body.active,
 
 ```
+
 - active a product
 
-### ```POST /updateStatus/```
+### `POST /updateStatus/`
+
 ```
   const { order_id, status } = req.body;
 
 ```
+
 - update a order status
 
 ## RODUCTS.JS Requests
 
-### ```GET /getProductsByLimit```
+### `GET /getProductsByLimit`
+
 ```
 req.query.page
 req.query.limit
 ```
-- return limited products for a page . 
 
-### ```GET /IdProduct/:id```
+- return limited products for a page .
 
-- return  products for a id. 
+### `GET /IdProduct/:id`
 
-### ```GET /SellerProduct/:username```
+- return products for a id.
 
-- return  products of a particular Seller user. 
+### `GET /SellerProduct/:username`
 
-### ```GET /getOtherProduct```
+- return products of a particular Seller user.
 
-- return  products of a all other Seller user than himself
+### `GET /getOtherProduct`
 
-### ```POST /AddToCart```
+- return products of a all other Seller user than himself
+
+### `POST /AddToCart`
+
 ```
     const { product_id, count } = req.body;
 ```
+
 - add items to the cart of a user
 
-### ```POST /RemoveFromCart```
+### `POST /RemoveFromCart`
+
 ```
     const { product_id, count } = req.body;
 ```
+
 - remove items to the cart of a user
 
-### ```POST /buyProduct```
+### `POST /buyProduct`
+
 ```
  all detils in shoppingModel.js Model
 ```
+
 - buy Items
 
-### ```POST /addProductReview```
+### `POST /addProductReview`
+
 ```
     const { product_id, ratings, comments } = req.body;
 
@@ -320,17 +344,18 @@ req.query.limit
 
 - add review of the item
 
+### `POST /getRatings`
 
-### ```POST /getRatings```
 ```
     const { product_id } = req.body;
 
 
 ```
 
-- get ratings of a product 
+- get ratings of a product
 
-### ```POST /updateProductReview```
+### `POST /updateProductReview`
+
 ```
     const { product_id, ratings, comments } = req.body;
 
@@ -339,17 +364,17 @@ req.query.limit
 
 - update review of a product
 
-
-
 ## VISITOR.JS Requests
 
-### ```POST /addVisitor```
+### `POST /addVisitor`
+
 ```
   const { seller_username, name, product_id } = req.body;
 
 ```
-- add a visitor when a user visit a product .  
 
-### ```GET /getVisitors```
+- add a visitor when a user visit a product .
 
-- get all visitor of a seeler. 
+### `GET /getVisitors`
+
+- get all visitor of a seeler.
