@@ -28,7 +28,7 @@ const upload = multer({
   filefilter,
 });
 
-router.post("/addCategory", upload.single("image"), async (req, res) => {
+router.post("/category", upload.single("image"), async (req, res) => {
   const { category } = req.body;
   const path = req.file.path;
 
@@ -41,7 +41,7 @@ router.post("/addCategory", upload.single("image"), async (req, res) => {
     .save()
     .then((response) => {
       console.log(response);
-      return res.json({ msg: "Category added successfully" });
+      return res.json({ category: response });
     })
     .catch((err) => {
       console.log(err);
@@ -54,6 +54,17 @@ router.post("/addCategory", upload.single("image"), async (req, res) => {
         return res.status(404).json({ error: err });
       }
     });
+});
+
+router.get("/category", async (req, res) => {
+  try {
+    const categories = await Category.find({});
+    if (!categories) throw "No Categories";
+    // console.log(categories);
+    return res.json({ categories });
+  } catch (error) {
+    return res.status(404).json({ error });
+  }
 });
 
 module.exports = router;
