@@ -17,6 +17,7 @@ const product = require("./routes/product");
 const sellerproduct = require("./routes/Sellerproducts");
 const visitorrouter = require("./routes/visitor");
 const invoiceRouter = require("./routes/invoice");
+const categoryRouter = require("./routes/category");
 
 mongoose.connect(
   "mongodb+srv://piyush:piyush2001@magi2.k3zwz.mongodb.net/test",
@@ -49,6 +50,7 @@ app.use("/products", product);
 app.use("/sellerproduct/", sellerproduct);
 app.use("/visitor", visitorrouter);
 app.use("/invoice", invoiceRouter);
+app.use("/category", categoryRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.listen(port, () => {
