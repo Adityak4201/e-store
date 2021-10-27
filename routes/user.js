@@ -114,16 +114,22 @@ router
           givenroll = req.body.roll;
         }
         if (password === cpassword) {
-          const allUsername = await USER.find({ profile_username : req.body.username }, "username").select("-_id").exec();
+          const allUsername = await USER.find(
+            { profile_username: req.body.username },
+            "username"
+          )
+            .select("-_id")
+            .exec();
 
-          console.log("allusernames " , allUsername);
+          console.log("allusernames ", allUsername);
 
           var username = "";
           loop = true;
           while (loop) {
-            username = req.body.username + Math.floor(100000 + Math.random() * 900000);
+            username =
+              req.body.username + Math.floor(100000 + Math.random() * 900000);
 
-            if(!(allUsername.some(i => i.username.includes(username)))){
+            if (!allUsername.some((i) => i.username.includes(username))) {
               loop = false;
             }
           }
@@ -160,7 +166,11 @@ router
               var mailResponse = await sendmail(subject, mytext, to);
               res
                 .status(200)
-                .send({ msg: "user succesfully saved", token: token , userdetails : userdata });
+                .send({
+                  msg: "user succesfully saved",
+                  token: token,
+                  userdetails: userdata,
+                });
             })
             .catch((err) => {
               // console.log(Object.keys(err.keyPattern));

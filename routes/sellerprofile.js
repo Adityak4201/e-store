@@ -66,7 +66,7 @@ router.route("/add").post(auth, (req, res) => {
   if (req.user.roll != "admin") {
     return res
       .status(404)
-      .send({ msg: "You can't add profile create a seller account" });
+      .json({ error: "You can't add profile create a seller account" });
   }
 
   const profiledata = Profile({
@@ -81,6 +81,24 @@ router.route("/add").post(auth, (req, res) => {
     .catch((err) => {
       console.log(err), res.json({ err });
     });
+});
+
+router.get("/profile", auth, async (req, res) => {
+  if (req.user.roll !== "admin")
+    return res
+      .status(403)
+      .json({ error: "Log in as Seller to view your profile" });
+
+  const username = req.user.username;
+  await Profile.findOne({ username }, function (err, docs) {
+    if (err) {
+      console.log(err);
+      return res.status(404).json({ error: err });
+    } else {
+      console.log("Result : ", docs);
+      return res.json(docs);
+    }
+  });
 });
 
 router.route("/getAllMessages/").get(auth, (req, res) => {
