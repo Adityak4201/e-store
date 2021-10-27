@@ -155,7 +155,7 @@ router
               hashPass = await encodeURIComponent(hashPass);
 
               // console.log("----------", hashPass);
-              mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
+              mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${username}&hp=${hashPass}'>Verfiy Now</a>`;
               to = req.body.email;
               var mailResponse = await sendmail(subject, mytext, to);
               res
