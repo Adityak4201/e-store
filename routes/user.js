@@ -43,7 +43,7 @@ router
   .route("/login")
   .post(
     [
-      check("username", "User Name is required").notEmpty(),
+      check("userEmailPhone", "Email is required").notEmpty(),
       check("password", "password is required").exists(),
     ],
     async (req, res) => {
