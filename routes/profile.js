@@ -177,7 +177,29 @@ router.route("/getProductsByCategory").get(async (req, res) => {
   }
 });
 
-router.post("/search", async (req, res) => {
+router.post("/searchByProduct", async (req, res) => {
+  const { str } = req.body;
+  try {
+    const products = await Product.find({
+      $or: [
+        {
+          productname: { $regex: str },
+        },
+        {
+          category: { $regex: str },
+        },
+      ],
+    });
+
+    if (!products.length) throw "No Products Found";
+
+    return res.json({ products });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
+router.post("/searchByShops", async (req, res) => {
   const { str } = req.body;
   try {
     const shops = await SellerProfile.find({
@@ -190,21 +212,9 @@ router.post("/search", async (req, res) => {
         },
       ],
     });
+    if (!shops.length) throw "No Shops Found";
 
-    const products = await Product.find({
-      $or: [
-        {
-          productname: { $regex: str },
-        },
-        {
-          category: { $regex: str },
-        },
-      ],
-    });
-
-    if (!shops.length && !products.length) throw "No Matches Found";
-
-    return res.json({ shops, products });
+    return res.json({ shops });
   } catch (err) {
     return res.status(404).json({ error: err });
   }
