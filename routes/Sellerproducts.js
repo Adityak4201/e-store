@@ -253,7 +253,7 @@ router.post("/updateStatus", auth, async (req, res) => {
       );
       var noti_to_buyer = await BuyerNoti(
         updatedOrder.buyername,
-        "Product has been " + status + " by the seller"
+        "Product has been " + status
       );
       res.send({ updatedOrder });
     })

@@ -164,13 +164,11 @@ router
               mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${username}&hp=${hashPass}'>Verfiy Now</a>`;
               to = req.body.email;
               var mailResponse = await sendmail(subject, mytext, to);
-              res
-                .status(200)
-                .send({
-                  msg: "user succesfully saved",
-                  token: token,
-                  userdetails: userdata,
-                });
+              res.status(200).send({
+                msg: "user succesfully saved",
+                token: token,
+                userdetails: userdata,
+              });
             })
             .catch((err) => {
               // console.log(Object.keys(err.keyPattern));
@@ -240,6 +238,59 @@ router.route("/verify").get(async (req, res) => {
       return res.json({ msg: "Verfication Failed. Please SignUp Again" });
     }
   }).select("-_id");
+  // res.status(200).send({ username: username, password: password });
+});
+
+router.route("/changePassMail").post(async (req, res) => {
+  try {
+    subject = "Verify Your Account";
+    hashPass = await CryptoJS.AES.encrypt(
+      req.body.email,
+      "verfiy email"
+    ).toString();
+    // console.log("before----------", hashPass);
+    hashPass = await encodeURIComponent(hashPass);
+    // console.log("----------", hashPass);
+    mytext = `Click here to verify <a href='https://localhost:3000/user/changePass?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
+    to = req.body.email;
+    var mailResponse = await sendmail(subject, mytext, to);
+    // console.log(mailResponse);
+    res.status(200).json({ msg: "mail sent ", mail: mailResponse });
+  } catch (error) {
+    return res.status(404).json({ error });
+  }
+});
+
+router.route("/changePass").get(async (req, res) => {
+  username = req.query.un;
+  CryptoJSemail = CryptoJS.AES.decrypt(req.query.hp, "verfiy email");
+  email = CryptoJSemail.toString(CryptoJS.enc.Utf8);
+
+  USER.findOne(
+    { profile_username: username, email: email },
+    async (err, result) => {
+      if (err) return res.status(403).send(err);
+      // console.log(result);
+      return res.json({ msg: result });
+    }
+  ).select("-_id");
+  // res.status(200).send({ username: username, password: password });
+});
+
+
+router.route("/newPass").post(async (req, res) => {
+  
+  newpass= await bcrypt.hash(req.body.newpass, 10);
+
+  await USER.findOneAndUpdate(
+    { profile_username: req.body.username, email: req.body.email },
+    { password: newpass },
+    async (err, result) => {
+      if (err) return res.status(403).send(err);
+      // console.log(result);
+      return res.json({ msg: "password updated" , result : result });
+    }
+  ).select("-_id");
   // res.status(200).send({ username: username, password: password });
 });
 

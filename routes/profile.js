@@ -71,7 +71,14 @@ router.route("/add").post(auth, (req, res) => {
 
   var address = {
     Type: req.body.addressType,
-    "Address ": req.body.address,
+    FullName : req.body.fullname,
+    houseno : req.body.housenoAdd,
+    landmark : req.body.landmarkAdd,
+    street: req.body.streetAdd,
+    city: req.body.cityAdd,
+    state :req.body.stateAdd,
+    country : req.body.countryAdd,
+    pincode : req.body.pincodeAdd
   };
 
   const profiledata = Profile({
@@ -100,11 +107,23 @@ router.route("/editAddress").post(auth, (req, res) => {
       .send({ msg: "You can't add profile create a basic account" });
   }
 
-  Product.findOneAndUpdate(
+  var address = {
+    Type: req.body.addressType,
+    FullName : req.body.fullname,
+    houseno : req.body.housenoAdd,
+    landmark : req.body.landmarkAdd,
+    street: req.body.streetAdd,
+    city: req.body.cityAdd,
+    state :req.body.stateAdd,
+    country : req.body.countryAdd,
+    pincode : req.body.pincodeAdd
+  };
+
+  Profile.findOneAndUpdate(
     { _id: req.user._id },
     {
       $set: {
-        address: req.body.address,
+        address: address,
       },
     },
     { new: true },
@@ -117,16 +136,16 @@ router.route("/editAddress").post(auth, (req, res) => {
   );
 });
 
-// router.route("/getSellersCategory").get(async (req, res) => {
-//   try {
-//     await SellerProfile.find({}, "bussiness_category", function (err, result) {
-//       if (err) return res.status(403).send(err);
-//       return res.json(result);
-//     }).distinct("bussiness_category");
-//   } catch (error) {
-//     console.log(err), res.json({ err: err });
-//   }
-// });
+router.route("/getAddress").get(auth, async (req, res) => {
+  try {
+    await Profile.find({username : req.user.username}, "address", function (err, result) {
+      if (err) return res.status(403).send(err);
+      return res.json(result);
+    });
+  } catch (error) {
+    console.log(err), res.json({ err: err });
+  }
+});
 
 router.route("/filterBySellerCategory").post(auth, (req, res) => {
   const category = req.body.category;
