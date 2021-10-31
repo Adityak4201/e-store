@@ -154,13 +154,10 @@ router.route("/getAddress").get(auth, async (req, res) => {
 router.route("/filterBySellerCategory").post(auth, (req, res) => {
   const category = req.body.category;
   try {
-    SellerProfile.find(
-      { bussiness_category: category },
-      function (err, result) {
-        if (err) return res.status(403).json({ error: err });
-        return res.json(result);
-      }
-    );
+    SellerProfile.find({ business_category: category }, function (err, result) {
+      if (err) return res.status(403).json({ error: err });
+      return res.json(result);
+    });
   } catch (err) {
     console.log(err);
     return res.status(402).json({ error: err });
@@ -209,10 +206,10 @@ router.post("/searchByShops", async (req, res) => {
     const shops = await SellerProfile.find({
       $or: [
         {
-          bussiness_name: { $regex: str },
+          business_name: { $regex: str },
         },
         {
-          bussiness_category: { $regex: str },
+          business_category: { $regex: str },
         },
       ],
     });

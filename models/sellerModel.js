@@ -9,10 +9,10 @@ const Seller_Profile = Schema({
   username: {
     type: String,
   },
-  bussiness_name: {
+  business_name: {
     type: String,
   },
-  bussiness_category: {
+  business_category: {
     type: String,
   },
   phone: {
