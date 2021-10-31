@@ -8,11 +8,11 @@ const authBeforeVerify = async (req, res, next) => {
     // console.log("x-auth-token", token);
     const verifyuser = jwt.verify(token, config.key);
     // console.log("verifyuser", verifyuser);
-    console.log("roll", verifyuser.roll, "id", verifyuser._id);
+    console.log("role", verifyuser.role, "id", verifyuser._id);
 
     const user = await Register.findOne({
       _id: verifyuser._id,
-      roll: verifyuser.roll,
+      role: verifyuser.role,
     });
 
     req.token = token;

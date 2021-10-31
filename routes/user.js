@@ -195,11 +195,11 @@ router.route("/getAccType/:username").get(async (req, res) => {
   }).select("-_id");
 });
 
-router.route("/getVerifyMail").post(authBeforeVerify, async (req, res) => {
+router.get("/getVerifyMail", authBeforeVerify, async (req, res) => {
   try {
     subject = "Verify Your Account";
     hashPass = await CryptoJS.AES.encrypt(
-      req.body.password,
+      req.user.password,
       "verfiy email"
     ).toString();
     // console.log("before----------", hashPass);
@@ -219,21 +219,19 @@ router.route("/verify").get(async (req, res) => {
   username = req.query.un;
   CryptoJSpassword = CryptoJS.AES.decrypt(req.query.hp, "verfiy email");
   password = CryptoJSpassword.toString(CryptoJS.enc.Utf8);
-  console.log("password", password, req.query.hp);
+  // console.log("password", password, req.query.hp);
 
   USER.findOne({ username: username }, async (err, result) => {
     if (err) return res.status(403).send(err);
-    // console.log(result);
-    let ismatch = await bcrypt.compare(password, result["password"]);
 
-    if (ismatch) {
+    if (password === result.password) {
       USER.findOneAndUpdate(
         { username: username },
         { status: "approved" },
         { new: true },
         async (uerr, updatedresult) => {
-          if (uerr) return res.status(403).send(uerr);
-          return res.json(updatedresult);
+          if (uerr) return res.status(403).json({ err: uerr });
+          return res.json({ msg: "Verification Successfull!! " });
         }
       );
     } else {

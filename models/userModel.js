@@ -51,10 +51,10 @@ const user = userschema({
   },
 });
 
-user.methods.generateAuthToken = async function (givenroll) {
+user.methods.generateAuthToken = async function (givenrole) {
   try {
     const token = jwt.sign(
-      { _id: this._id.toString(), roll: givenroll },
+      { _id: this._id.toString(), role: givenrole },
       config.key
     );
     await this.save();
