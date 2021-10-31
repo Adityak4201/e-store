@@ -27,18 +27,29 @@ router.post("/addVisitor", auth, async (req, res) => {
     });
 });
 
-router.get("/getVisitors", auth, async (req, res) => {
+router.get("/getVisitorsBySeller", auth, async (req, res) => {
   if (req.user.roll != "admin") {
     return res.status(404).send({ msg: "Login to see visitors list" });
   }
   try {
     const { seller_username } = req.user;
-    const seller = await Visitor.findOne({ seller_username });
-    if (!seller || !seller.visitor_info || seller.visitor_info.length === 0)
-      throw "No Visitors";
+    const visitors = await Visitor.find({ seller_username });
+    if (!visitors || !visitors.length) throw "No Visitors";
     // console.log(buyersList);
-    return res.json({ visitors: seller.visitor_info });
+    return res.json({ visitors });
   } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
+router.get("/getAllVisitors", auth, async (req, res) => {
+  try {
+    const visitors = await Visitor.find();
+    // console.log(visitors);
+    if (!visitors || !visitors.length) throw "No Visitors right now!!";
+    return res.json({ visitors });
+  } catch (error) {
+    // console.log(error);
     return res.status(403).json({ error });
   }
 });
