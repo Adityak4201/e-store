@@ -10,7 +10,7 @@ const multer = require("multer");
 const path = require("path");
 
 router.get("/", auth, async (req, res) => {
-  res.send({ msg: "Get Your profile", roll: req.user.roll });
+  res.send({ msg: "Get Your profile", role: req.user.role });
 });
 
 const storage = multer.diskStorage({
@@ -38,7 +38,7 @@ const upload = multer({
 router
   .route("/add/image")
   .patch(auth, upload.single("profileimg"), (req, res) => {
-    if (req.user.roll != "basic") {
+    if (req.user.role != "basic") {
       return res
         .status(404)
         .send({ msg: "You can't add profile create a basic account" });
@@ -63,7 +63,7 @@ router
   });
 
 router.route("/add").post(auth, (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a basic account" });
@@ -71,14 +71,14 @@ router.route("/add").post(auth, (req, res) => {
 
   var address = {
     Type: req.body.addressType,
-    FullName : req.body.fullname,
-    houseno : req.body.housenoAdd,
-    landmark : req.body.landmarkAdd,
+    FullName: req.body.fullname,
+    houseno: req.body.housenoAdd,
+    landmark: req.body.landmarkAdd,
     street: req.body.streetAdd,
     city: req.body.cityAdd,
-    state :req.body.stateAdd,
-    country : req.body.countryAdd,
-    pincode : req.body.pincodeAdd
+    state: req.body.stateAdd,
+    country: req.body.countryAdd,
+    pincode: req.body.pincodeAdd,
   };
 
   const profiledata = Profile({
@@ -101,7 +101,7 @@ router.route("/add").post(auth, (req, res) => {
 });
 
 router.route("/editAddress").post(auth, (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a basic account" });
@@ -109,14 +109,14 @@ router.route("/editAddress").post(auth, (req, res) => {
 
   var address = {
     Type: req.body.addressType,
-    FullName : req.body.fullname,
-    houseno : req.body.housenoAdd,
-    landmark : req.body.landmarkAdd,
+    FullName: req.body.fullname,
+    houseno: req.body.housenoAdd,
+    landmark: req.body.landmarkAdd,
     street: req.body.streetAdd,
     city: req.body.cityAdd,
-    state :req.body.stateAdd,
-    country : req.body.countryAdd,
-    pincode : req.body.pincodeAdd
+    state: req.body.stateAdd,
+    country: req.body.countryAdd,
+    pincode: req.body.pincodeAdd,
   };
 
   Profile.findOneAndUpdate(
@@ -138,10 +138,14 @@ router.route("/editAddress").post(auth, (req, res) => {
 
 router.route("/getAddress").get(auth, async (req, res) => {
   try {
-    await Profile.find({username : req.user.username}, "address", function (err, result) {
-      if (err) return res.status(403).send(err);
-      return res.json(result);
-    });
+    await Profile.find(
+      { username: req.user.username },
+      "address",
+      function (err, result) {
+        if (err) return res.status(403).send(err);
+        return res.json(result);
+      }
+    );
   } catch (error) {
     console.log(err), res.json({ err: err });
   }
@@ -319,7 +323,7 @@ router.route("/messagedTo").post(auth, (req, res) => {
 });
 
 router.post("/addShopReview", auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res.status(404).send({ msg: "Login as customer to give a review" });
   }
   try {
@@ -369,7 +373,7 @@ router.post("/getRatings", async (req, res) => {
 });
 
 router.post("/updateShopReview", auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res.status(404).send({ msg: "Login as customer to give a review" });
   }
   try {
@@ -396,7 +400,7 @@ router.post("/updateShopReview", auth, async (req, res) => {
 });
 
 router.post("/cancelOrder", auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res.status(404).send({ msg: "Login to cancel the order" });
   }
 

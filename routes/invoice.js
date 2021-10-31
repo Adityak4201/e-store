@@ -4,7 +4,7 @@ const Invoice = require("../models/invoiceModel");
 const auth = require("../middleware/auth");
 
 router.post("/addInvoice", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to add invoice!!" });
   }
   const { c_username, invoice, c_name, c_email, c_phone } = req.body;
@@ -36,7 +36,7 @@ router.post("/addInvoice", auth, async (req, res) => {
 });
 
 router.get("/getInvoices", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see invoices" });
   }
   try {
@@ -52,7 +52,7 @@ router.get("/getInvoices", auth, async (req, res) => {
 });
 
 router.post("/getBuyersInvoices", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see invoices" });
   }
   try {

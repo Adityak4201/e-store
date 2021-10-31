@@ -30,7 +30,7 @@ const upload = multer({
 });
 
 router.route("/").get(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
@@ -62,7 +62,7 @@ router
   });
 
 router.route("/Add").post(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
@@ -108,7 +108,7 @@ router.route("/Add").post(auth, (req, res) => {
 });
 
 router.route("/addSKU/:id").post(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "create a seller account to view" });
   }
   Product.findOneAndUpdate(
@@ -129,7 +129,7 @@ router.route("/getSKU/:id").get(auth, (req, res) => {
 });
 
 router.route("/getOwnProducts").get(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "create a seller account to view" });
   }
   Product.find({ username: req.user.username }, (err, result) => {
@@ -151,7 +151,7 @@ router.route("/getByLimit").get(async (req, res) => {
 });
 
 router.route("/deleteSellerProduct/:id").delete(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "create a seller account to view" });
   }
 
@@ -171,7 +171,7 @@ router.route("/deleteSellerProduct/:id").delete(auth, (req, res) => {
 });
 
 router.route("/editProductDetails").post(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
@@ -228,7 +228,7 @@ router.get("/allActive", auth, (req, res) => {
 });
 
 router.post("/updateStatus", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to update order status" });
   }
 

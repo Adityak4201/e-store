@@ -17,7 +17,6 @@ const sellerModel = require("../models/sellerModel");
 const productModel = require("../models/productModel");
 app.use(express.static("uploads"));
 
-
 router.route("/products").get(async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
@@ -45,7 +44,6 @@ router.route("/IdProduct/:id").get((req, res) => {
   });
 });
 
-
 router.route("/SellerProduct/:username").get((req, res) => {
   Product.find(
     { username: req.params.username, active: true },
@@ -67,7 +65,7 @@ router.route("/getOtherProduct").get(auth, (req, res) => {
 });
 
 router.route("/AddToCart").post(auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res
       .status(404)
       .send({ msg: "Login as customer to add products to cart" });
@@ -140,7 +138,7 @@ router.route("/AddToCart").post(auth, async (req, res) => {
 });
 
 router.route("/RemoveFromCart").post(auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res
       .status(404)
       .send({ msg: "Login as customer to remove products from cart" });
@@ -176,7 +174,7 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
 });
 
 router.route("/buyProduct").post(auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res
       .status(404)
       .send({ msg: "Login as customer to buy products to cart" });
@@ -217,10 +215,8 @@ router.route("/filterProductByCategory").post(async (req, res) => {
   }
 });
 
-
-
 router.post("/addProductReview", auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res.status(404).send({ msg: "Login as customer to give a review" });
   }
   try {
@@ -265,7 +261,7 @@ router.post("/getRatings", async (req, res) => {
 });
 
 router.post("/updateProductReview", auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res.status(404).send({ msg: "Login as customer to give a review" });
   }
   try {

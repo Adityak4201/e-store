@@ -4,7 +4,7 @@ const Visitor = require("../models/visitorModel");
 const auth = require("../middleware/auth");
 
 router.post("/addVisitor", auth, async (req, res) => {
-  if (req.user.roll != "basic") {
+  if (req.user.role != "basic") {
     return res
       .status(404)
       .send({ msg: "Visitor can only be added after he is signed in!!" });
@@ -28,7 +28,7 @@ router.post("/addVisitor", auth, async (req, res) => {
 });
 
 router.get("/getVisitorsBySeller", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see visitors list" });
   }
   try {

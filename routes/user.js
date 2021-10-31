@@ -53,9 +53,9 @@ router
       }
       try {
         const { userEmailPhone, password } = req.body;
-        var givenroll = "basic";
-        if (req.body.roll != undefined) {
-          givenroll = req.body.roll;
+        var givenrole = "basic";
+        if (req.body.role != undefined) {
+          givenrole = req.body.role;
         }
         const user = await USER.findOne({
           $or: [
@@ -74,7 +74,7 @@ router
         if (!user) throw "User not found";
         let ismatch = await bcrypt.compare(password, user.password);
         if (ismatch) {
-          let token = await user.generateAuthToken(givenroll);
+          let token = await user.generateAuthToken(givenrole);
           console.log(token);
           const cleanUser = getCleanUser(user);
           res.send({ user: cleanUser, token });
@@ -92,7 +92,8 @@ router
   .route("/register")
   .post(
     [
-      check("username", "Userame is required").notEmpty(),
+      check("username", "Username is required").notEmpty(),
+      check("phone", "phone is required").notEmpty(),
       check("email", "Please include a valid email").isEmail(),
       check(
         "password",
@@ -109,9 +110,9 @@ router
 
         const password = req.body.password;
         const cpassword = req.body.confpassword;
-        var givenroll = "basic";
-        if (req.body.roll != undefined) {
-          givenroll = req.body.roll;
+        var givenrole = "basic";
+        if (req.body.role != undefined) {
+          givenrole = req.body.role;
         }
         if (password === cpassword) {
           const allUsername = await USER.find(
@@ -139,14 +140,14 @@ router
           // .send({ msg: allUsername , finalusername : username});
 
           const userdata = new USER({
-            roll: givenroll,
-            username: username,
+            role: givenrole,
+            username,
             profile_username: req.body.username,
             email: req.body.email,
             password: req.body.password,
             phone: req.body.phone,
           });
-          let token = await userdata.generateAuthToken(givenroll);
+          let token = await userdata.generateAuthToken(givenrole);
           await userdata
             .save()
             .then(async () => {
@@ -164,10 +165,11 @@ router
               mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${username}&hp=${hashPass}'>Verfiy Now</a>`;
               to = req.body.email;
               var mailResponse = await sendmail(subject, mytext, to);
+              const user = await getCleanUser(userdata);
               res.status(200).send({
                 msg: "user succesfully saved",
                 token: token,
-                userdetails: userdata,
+                userdetails: user,
               });
             })
             .catch((err) => {
@@ -187,7 +189,7 @@ router
   );
 
 router.route("/getAccType/:username").get(async (req, res) => {
-  USER.findOne({ username: req.params.username }, "roll", (err, result) => {
+  USER.findOne({ username: req.params.username }, "role", (err, result) => {
     if (err) return res.status(403).send(err);
     return res.json(result);
   }).select("-_id");
@@ -277,10 +279,8 @@ router.route("/changePass").get(async (req, res) => {
   // res.status(200).send({ username: username, password: password });
 });
 
-
 router.route("/newPass").post(async (req, res) => {
-  
-  newpass= await bcrypt.hash(req.body.newpass, 10);
+  newpass = await bcrypt.hash(req.body.newpass, 10);
 
   await USER.findOneAndUpdate(
     { profile_username: req.body.username, email: req.body.email },
@@ -288,7 +288,7 @@ router.route("/newPass").post(async (req, res) => {
     async (err, result) => {
       if (err) return res.status(403).send(err);
       // console.log(result);
-      return res.json({ msg: "password updated" , result : result });
+      return res.json({ msg: "password updated", result: result });
     }
   ).select("-_id");
   // res.status(200).send({ username: username, password: password });

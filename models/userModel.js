@@ -8,7 +8,7 @@ const methods = require("methods");
 const userschema = mongoose.Schema;
 
 const user = userschema({
-  roll: {
+  role: {
     type: String,
     default: "basic",
     enum: ["basic", "admin"],
