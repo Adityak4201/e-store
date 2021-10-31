@@ -151,27 +151,22 @@ router.route("/getAddress").get(auth, async (req, res) => {
   }
 });
 
-router.route("/filterBySellerCategory").post(auth, (req, res) => {
+router.get("/shops", async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+
+  const startindex = (page - 1) * limit;
+  const shops = await SellerProfile.find({});
+  res.json(shops);
+});
+
+router.route("/filterBySellerCategory").post(async (req, res) => {
   const category = req.body.category;
   try {
     SellerProfile.find({ business_category: category }, function (err, result) {
       if (err) return res.status(403).json({ error: err });
       return res.json(result);
     });
-  } catch (err) {
-    console.log(err);
-    return res.status(402).json({ error: err });
-  }
-});
-
-router.route("/getProductsByCategory").get(async (req, res) => {
-  const category = req.body.category;
-  try {
-    const products = await Product.find({ category: category });
-
-    console.log(products);
-
-    return res.json({ products: products });
   } catch (err) {
     console.log(err);
     return res.status(402).json({ error: err });
@@ -218,20 +213,6 @@ router.post("/searchByShops", async (req, res) => {
     return res.json({ shops });
   } catch (err) {
     return res.status(404).json({ error: err });
-  }
-});
-
-router.route("/getShopsByCategory").get(async (req, res) => {
-  const category = req.body.category;
-  try {
-    const shops = await SellerProfile.find({ category: category });
-
-    console.log(shops);
-
-    return res.json({ shops: shops });
-  } catch (err) {
-    console.log(err);
-    return res.status(402).json({ error: err });
   }
 });
 

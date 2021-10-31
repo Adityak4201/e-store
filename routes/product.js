@@ -17,7 +17,7 @@ const sellerModel = require("../models/sellerModel");
 const productModel = require("../models/productModel");
 app.use(express.static("uploads"));
 
-router.route("/products").get(async (req, res) => {
+router.get("/products", async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
 
