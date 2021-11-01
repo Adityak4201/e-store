@@ -275,7 +275,7 @@ router.get("/showAbout", auth, async (req, res) => {
 
 router.get("/getBuyersList", auth, async (req, res) => {
   if (req.user.role != "admin") {
-    return res.status(404).send({ msg: "Login to see buyers' list" });
+    return res.status(404).json({ error: "Login to see buyers' list" });
   }
   try {
     const { username } = req.user;
@@ -288,6 +288,22 @@ router.get("/getBuyersList", auth, async (req, res) => {
     if (!buyersList || buyersList.length === 0) throw "No Buyers";
     // console.log(buyersList);
     return res.json({ buyersList });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
+router.get("/getSellerOrders", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).json({ error: "Login to see orders' list" });
+  }
+
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    const ordersList = await ShopProduct.find({ sellerid: seller._id });
+    if (!ordersList || ordersList.length === 0) throw "No Orders";
+    return res.json({ ordersList });
   } catch (error) {
     return res.status(403).json({ error });
   }
