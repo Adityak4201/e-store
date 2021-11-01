@@ -139,6 +139,99 @@ router.route("/getUserMessage/:username").get(auth, (req, res) => {
   });
 });
 
+router.post("/addExtraCharges", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login as admin to add extra" });
+  }
+  let { name , value, type } = req.body;
+  const { username } = req.user;
+  await Profile.findOneAndUpdate(
+    {
+      username,
+      "extra_charges.name": { $ne: name },
+
+    },
+    { $addToSet: { extra_charges: {  name , value, type  } } },
+    { new: true }
+  )
+    .then((extraAdded) => {
+
+      if (!extraAdded)
+        return res.status(404).json({ error: "Extra already exists" });
+      return res.send({ extraAdded });
+    })
+    .catch((error) => {
+      return res.status(404).json({ error: "No Seller Found" });
+    });
+});
+
+router.post("/updateExtraCharges", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to update extra charges details" });
+  }
+
+  const { name , value, type } = req.body;
+  const { username } = req.user;
+  await Profile.findOneAndUpdate(
+    {
+      username,
+      "extra_charges.name": name,
+
+    },
+    { $set: { "extra_charges.$": {  name , value, type } } },
+    { new: true }
+  )
+    .then((extraChargeUpdated) => {
+      // console.log(staffUpdated);
+      if (!extraChargeUpdated)
+        return res
+          .status(404)
+          .json({ error: "extraCharge not found with given name" });
+      return res.send({ extraChargeUpdated });
+    })
+    .catch((error) => {
+      return res.status(404).json({ error: "No Seller Found", msd : error});
+    });
+});
+
+router.post("/deleteExtraCharges", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "Login to delete ExtraCharges details" });
+  }
+
+  const { name } = req.body;
+  const { username } = req.user;
+  await Profile.updateOne(
+    {
+      username,
+    },
+    { $pull: { extra_charges: { name } } }
+  )
+    .then((deleted) => {
+      // console.log(deleted);
+      return res.json({ msg: "Extra Charge with given name deleted" });
+    })
+    .catch((error) => {
+      return res.status(403).json({ error });
+    });
+});
+
+router.get("/viewExtraCharges", auth, async (req, res) => {
+  if (req.user.roll != "admin") {
+    return res.status(404).send({ msg: "Login to see staff list" });
+  }
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    if (!seller) throw "Seller Profile is missing";
+    return res.json({ extra_charges: seller.extra_charges });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
 router.post("/addStaff", auth, async (req, res) => {
   if (req.user.roll != "admin") {
     return res.status(404).send({ msg: "Login to add staff" });

@@ -34,6 +34,7 @@ const Product = Schema({
   },
   SKU: {
     type: String,
+  
   },
   Item_Returnable: { type: Number },
   reviews: { type: Array, default: [] },

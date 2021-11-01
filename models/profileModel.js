@@ -29,6 +29,7 @@ const Profile = Schema({
     type: String,
   },
 
+  
   cart: { type: Array, default: [] },
   items: { type: Array, default: [] },
   noti: { type: Array, default: [] },

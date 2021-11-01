@@ -15,6 +15,7 @@ const auth = async (req, res, next) => {
       roll: verifyuser.roll,
     }).select("-password");
 
+    // console.log("suer" , user);
     req.token = token;
     req.user = user;
     if (user != null) {

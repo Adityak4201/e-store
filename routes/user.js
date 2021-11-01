@@ -251,7 +251,7 @@ router.route("/changePassMail").post(async (req, res) => {
     // console.log("before----------", hashPass);
     hashPass = await encodeURIComponent(hashPass);
     // console.log("----------", hashPass);
-    mytext = `Click here to verify <a href='https://localhost:3000/user/changePass?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
+    mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/changePass?un=${req.body.username}&hp=${hashPass}'>Verfiy Now</a>`;
     to = req.body.email;
     var mailResponse = await sendmail(subject, mytext, to);
     // console.log(mailResponse);
