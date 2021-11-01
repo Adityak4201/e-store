@@ -40,15 +40,19 @@ router.route("/").get(auth, (req, res) => {
 
 router
   .route("/add/coverImage/:id")
-  .patch(auth, upload.single("coverImage"), async (req, res) => {
-    console.log("upload image");
+  .post(auth, upload.array("coverImage", 6), async (req, res) => {
+    // console.log("upload image");
     // await compress(req.file.filename);
+    const reqFiles = [];
+    for (var i = 0; i < req.files.length; i++) {
+      reqFiles.push("/products/" + req.files[i].filename);
+    }
 
     Product.findOneAndUpdate(
       { _id: req.params.id },
       {
         $set: {
-          coverImage: req.file.filename,
+          coverImage: reqFiles,
         },
       },
       { new: true },

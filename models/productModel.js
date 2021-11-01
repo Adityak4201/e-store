@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const Product = Schema({
   coverImage: {
-    type: String,
-    default: "",
+    type: Array,
+    default: [],
   },
   username: {
     type: String,
@@ -34,11 +34,10 @@ const Product = Schema({
   },
   SKU: {
     type: String,
-  
   },
   Item_Returnable: { type: Number },
   reviews: { type: Array, default: [] },
-  active : {type: Boolean, default : false}
+  active: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("Product", Product);
