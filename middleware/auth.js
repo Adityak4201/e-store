@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
     const token = req.header("x-auth-token");
     // console.log("x-auth-token", token);
     const verifyuser = jwt.verify(token, config.key);
-    console.log("verifyuser", verifyuser);
+    // console.log("verifyuser", verifyuser);
     console.log("role", verifyuser.role, "id", verifyuser._id);
 
     const user = await Register.findOne({
