@@ -30,7 +30,7 @@ const upload = multer({
 
 router.post("/category", upload.single("image"), async (req, res) => {
   const { category } = req.body;
-  const path = req.file.path;
+  const path = req.file.path.split("uploads")[1];
 
   const categoryData = new Category({
     category_name: category,

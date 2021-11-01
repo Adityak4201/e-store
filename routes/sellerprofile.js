@@ -7,7 +7,7 @@ const multer = require("multer");
 const path = require("path");
 
 router.get("/", auth, async (req, res) => {
-  res.send({ msg: "Get Your profile", roll: req.user.roll });
+  res.send({ msg: "Get Your profile", role: req.user.role });
 });
 
 const storage = multer.diskStorage({
@@ -37,7 +37,7 @@ router
   .route("/add/image")
   .patch(auth, upload.single("profileimg"), (req, res) => {
     console.log("user is is ", req.user._id);
-    if (req.user.roll != "admin") {
+    if (req.user.role != "admin") {
       return res
         .status(404)
         .send({ msg: "You can't add profile create a seller account" });
@@ -63,7 +63,7 @@ router
   });
 
 router.route("/add").post(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .json({ error: "You can't add profile create a seller account" });
@@ -84,7 +84,7 @@ router.route("/add").post(auth, (req, res) => {
 });
 
 router.get("/profile", auth, async (req, res) => {
-  if (req.user.roll !== "admin")
+  if (req.user.role !== "admin")
     return res
       .status(403)
       .json({ error: "Log in as Seller to view your profile" });
@@ -102,7 +102,7 @@ router.get("/profile", auth, async (req, res) => {
 });
 
 router.route("/getAllMessages/").get(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
@@ -115,7 +115,7 @@ router.route("/getAllMessages/").get(auth, (req, res) => {
 });
 
 router.route("/getUserMessage/:username").get(auth, (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "create a seller account" });
   }
 
@@ -233,7 +233,7 @@ router.get("/viewExtraCharges", auth, async (req, res) => {
 });
 
 router.post("/addStaff", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to add staff" });
   }
   let { s_position, s_username, s_password } = req.body;
@@ -264,7 +264,7 @@ router.post("/addStaff", auth, async (req, res) => {
 });
 
 router.post("/updateStaff", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to update staff details" });
   }
 
@@ -292,7 +292,7 @@ router.post("/updateStaff", auth, async (req, res) => {
 });
 
 router.post("/deleteStaff", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "Login to delete staff member details" });
@@ -316,7 +316,7 @@ router.post("/deleteStaff", auth, async (req, res) => {
 });
 
 router.get("/viewStaff", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
   try {
@@ -330,7 +330,7 @@ router.get("/viewStaff", auth, async (req, res) => {
 });
 
 router.post("/addAbout", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
   const { username } = req.user;
@@ -353,7 +353,7 @@ router.post("/addAbout", auth, async (req, res) => {
 });
 
 router.get("/showAbout", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
   try {
@@ -367,8 +367,8 @@ router.get("/showAbout", auth, async (req, res) => {
 });
 
 router.get("/getBuyersList", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
-    return res.status(404).send({ msg: "Login to see buyers' list" });
+  if (req.user.role != "admin") {
+    return res.status(404).json({ error: "Login to see buyers' list" });
   }
   try {
     const { username } = req.user;
@@ -381,6 +381,22 @@ router.get("/getBuyersList", auth, async (req, res) => {
     if (!buyersList || buyersList.length === 0) throw "No Buyers";
     // console.log(buyersList);
     return res.json({ buyersList });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
+router.get("/getSellerOrders", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).json({ error: "Login to see orders' list" });
+  }
+
+  try {
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    const ordersList = await ShopProduct.find({ sellerid: seller._id });
+    if (!ordersList || ordersList.length === 0) throw "No Orders";
+    return res.json({ ordersList });
   } catch (error) {
     return res.status(403).json({ error });
   }

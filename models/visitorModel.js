@@ -7,9 +7,16 @@ const Visitor = new Schema(
       type: String,
       required: true,
     },
-    visitor_info: {
-      type: Array,
-      default: [],
+    visitor_name: {
+      type: String,
+      required: true,
+    },
+    product_id: {
+      type: String,
+      default: "",
+    },
+    visitor_email: {
+      type: String,
       required: true,
     },
   },
