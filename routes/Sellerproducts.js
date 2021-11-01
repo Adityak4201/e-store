@@ -43,6 +43,7 @@ router
   .post(auth, upload.array("coverImage", 6), async (req, res) => {
     // console.log("upload image");
     // await compress(req.file.filename);
+    // console.log(req.files);
     const reqFiles = [];
     for (var i = 0; i < req.files.length; i++) {
       reqFiles.push("/products/" + req.files[i].filename);
@@ -59,6 +60,7 @@ router
       (err, result) => {
         if (err) {
           console.log(err);
+          return res.status(404).json({ error: err });
         }
         return res.json(result);
       }
@@ -71,6 +73,7 @@ router.route("/Add").post(auth, (req, res) => {
       .status(404)
       .send({ msg: "You can't add profile create a seller account" });
   }
+  console.log(req.user, req.body);
   // console.log(req.user);
   // console.log(req.body);
   const { username } = req.user;
