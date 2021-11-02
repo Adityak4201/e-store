@@ -272,21 +272,61 @@ router.route("/chatWithUser").post(auth, (req, res) => {
   }
 });
 
-// all users who have messaged to logged in user
-router.route("/messagedBy").post(auth, (req, res) => {
+// all recent chats
+router.route("/recentChat").post(async (req, res) => {
   try {
-    message_Seller
-      .find({ to: req.user.username }, "by")
-      .distinct("by", async function (err, result) {
-        if (err) return res.status(403).send(err);
-        return res.json(result);
-      });
+    const response = await message_Seller
+      .find(
+        { $or: [{ to: req.body.username }, { by: req.body.username }] },
+        "by to"
+      )
+      .sort({ date: -1 })
+      .exec();
+
+    const lastmessaged = [];
+    response.forEach((element) => {
+      if (
+        (element["by"] == req.body.username) &
+        (lastmessaged.indexOf(element["to"]) === -1)
+      ) {
+        lastmessaged.push(element["to"]);
+      }
+
+      if (
+        (element["to"] == req.body.username) &
+        (lastmessaged.indexOf(element["by"]) === -1)
+      ) {
+        lastmessaged.push(element["by"]);
+      }
+    });
+
+    console.log("lastmessaged" , lastmessaged)
+    var recentMessages = [];
+    var j = 0;
+    for (let i = 0; i < lastmessaged.length; i++) {
+      var message = await message_Seller
+        .findOne({
+          $or: [
+            { to: req.body.username, by: lastmessaged[i] },
+            { to: lastmessaged[i], by: req.body.username },
+          ],
+        })
+        .sort({ date: -1 })
+        .exec();
+
+      if (message != null) {
+        recentMessages[j] = message;
+        j++;
+      }
+    }
+
+    res.json({ response: lastmessaged, recentMessages: recentMessages });
   } catch (err) {
     console.log(err), res.json({ err: err });
   }
 });
 
-// all user who looged in user have messaged
+// all user who logged in user have messaged
 router.route("/messagedTo").post(auth, (req, res) => {
   try {
     message_Seller
