@@ -156,7 +156,10 @@ router.get("/shops", async (req, res) => {
   const limit = parseInt(req.query.limit);
 
   const startindex = (page - 1) * limit;
-  const shops = await SellerProfile.find({});
+  const shops = await SellerProfile.find({})
+    .limit(limit)
+    .skip(startindex)
+    .exec();
   res.json(shops);
 });
 
@@ -300,7 +303,7 @@ router.route("/recentChat").post(auth, async (req, res) => {
       }
     });
 
-    console.log("lastmessaged" , lastmessaged)
+    console.log("lastmessaged", lastmessaged);
     var recentMessages = [];
     var j = 0;
     for (let i = 0; i < lastmessaged.length; i++) {

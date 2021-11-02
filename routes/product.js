@@ -54,7 +54,29 @@ router.route("/SellerProduct/:username").get((req, res) => {
   );
 });
 
+router.route("/SellerProductByLimit/:username").get(async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const startindex = (page - 1) * limit;
+
+  try {
+    var prods = await Product.find({
+      username: req.params.username,
+      active: true,
+    })
+      .limit(limit)
+      .skip(startindex)
+      .exec();
+
+    res.json({ productsByLimit: prods });
+  } catch (error) {
+    res.json({ err: error });
+  }
+});
+
 router.route("/getOtherProduct").get(auth, (req, res) => {
+
+
   Product.find(
     { username: { $ne: req.user.username }, active: true },
     (err, result) => {
@@ -62,6 +84,24 @@ router.route("/getOtherProduct").get(auth, (req, res) => {
       return res.json({ data: result });
     }
   );
+});
+
+router.route("/getOtherProductByLimit").get(auth, async (req, res) => {
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  const startindex = (page - 1) * limit;
+
+  try {
+    
+    var prods = await   Product.find({ username: { $ne: req.user.username }, active: true })
+    .limit(limit)
+    .skip(startindex)
+    .exec();
+    res.json({otherprodsByLimit : prods})
+  } catch (error) {
+    res.json({err : error})
+  }
+
 });
 
 router.route("/AddToCart").post(auth, async (req, res) => {

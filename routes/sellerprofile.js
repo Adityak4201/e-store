@@ -101,61 +101,21 @@ router.get("/profile", auth, async (req, res) => {
   });
 });
 
-router.route("/getAllMessages/").get(auth, (req, res) => {
-  if (req.user.role != "admin") {
-    return res
-      .status(404)
-      .send({ msg: "You can't add profile create a seller account" });
-  }
-
-  Profile.find({ username: req.user.username }, "message", (err, result) => {
-    if (err) return res.status(403).send(err);
-    return res.json(result);
-  });
-});
-
-router.route("/getUserMessage/:username").get(auth, (req, res) => {
-  if (req.user.role != "admin") {
-    return res.status(404).send({ msg: "create a seller account" });
-  }
-
-  var paramsUsername = req.params.username;
-
-  var messages = {};
-  Profile.find({ username: req.user.username }, "message", (err, result) => {
-    if (err) return res.status(403).send(err);
-
-    var i = 0;
-    for (x in result[0]["message"]) {
-      if (
-        result[0]["message"][x]["by"] == paramsUsername ||
-        result[0]["message"][x]["to"] == paramsUsername
-      ) {
-        messages[i] = result[0]["message"][x];
-        i++;
-      }
-    }
-    return res.json(messages);
-  });
-});
-
 router.post("/addExtraCharges", auth, async (req, res) => {
   if (req.user.roll != "admin") {
     return res.status(404).send({ msg: "Login as admin to add extra" });
   }
-  let { name , value, type } = req.body;
+  let { name, value, type } = req.body;
   const { username } = req.user;
   await Profile.findOneAndUpdate(
     {
       username,
       "extra_charges.name": { $ne: name },
-
     },
-    { $addToSet: { extra_charges: {  name , value, type  } } },
+    { $addToSet: { extra_charges: { name, value, type } } },
     { new: true }
   )
     .then((extraAdded) => {
-
       if (!extraAdded)
         return res.status(404).json({ error: "Extra already exists" });
       return res.send({ extraAdded });
@@ -167,18 +127,19 @@ router.post("/addExtraCharges", auth, async (req, res) => {
 
 router.post("/updateExtraCharges", auth, async (req, res) => {
   if (req.user.roll != "admin") {
-    return res.status(404).send({ msg: "Login to update extra charges details" });
+    return res
+      .status(404)
+      .send({ msg: "Login to update extra charges details" });
   }
 
-  const { name , value, type } = req.body;
+  const { name, value, type } = req.body;
   const { username } = req.user;
   await Profile.findOneAndUpdate(
     {
       username,
       "extra_charges.name": name,
-
     },
-    { $set: { "extra_charges.$": {  name , value, type } } },
+    { $set: { "extra_charges.$": { name, value, type } } },
     { new: true }
   )
     .then((extraChargeUpdated) => {
@@ -190,7 +151,7 @@ router.post("/updateExtraCharges", auth, async (req, res) => {
       return res.send({ extraChargeUpdated });
     })
     .catch((error) => {
-      return res.status(404).json({ error: "No Seller Found", msd : error});
+      return res.status(404).json({ error: "No Seller Found", msd: error });
     });
 });
 
@@ -386,6 +347,33 @@ router.get("/getBuyersList", auth, async (req, res) => {
   }
 });
 
+router.get("/getBuyersListByLimit", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).json({ error: "Login to see buyers' list" });
+  }
+  try {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const startindex = (page - 1) * limit;
+
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    // console.log(seller);
+    const buyersList = await ShopProduct.find(
+      { sellerid: seller._id },
+      { buyerid: 1, buyername: 1, buyerphone: 1, date: 1, _id: 0 }
+    )
+      .limit(limit)
+      .skip(startindex)
+      .exec();
+    if (!buyersList || buyersList.length === 0) throw "No Buyers";
+    // console.log(buyersList);
+    return res.json({ buyersList });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
 router.get("/getSellerOrders", auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res.status(404).json({ error: "Login to see orders' list" });
@@ -395,6 +383,29 @@ router.get("/getSellerOrders", auth, async (req, res) => {
     const { username } = req.user;
     const seller = await Profile.findOne({ username });
     const ordersList = await ShopProduct.find({ sellerid: seller._id });
+    if (!ordersList || ordersList.length === 0) throw "No Orders";
+    return res.json({ ordersList });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
+router.get("/getSellerOrdersByLimit", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).json({ error: "Login to see orders' list" });
+  }
+
+  try {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const startindex = (page - 1) * limit;
+
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    const ordersList = await ShopProduct.find({ sellerid: seller._id })
+      .limit(limit)
+      .skip(startindex)
+      .exec();
     if (!ordersList || ordersList.length === 0) throw "No Orders";
     return res.json({ ordersList });
   } catch (error) {
