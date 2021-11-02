@@ -433,4 +433,19 @@ router.post("/getOrdersForSellerByLimit", auth, async (req, res) => {
   }
 });
 
+router.post("/getBuyersRatio", auth, async (req, res) => {
+  if (req.user.role !== "admin")
+    return res.status(404).json({ error: "Login to see buyers' ratio" });
+  try {
+    const { buyerid } = req.body;
+    const products = await ShopProduct.find({ buyerid });
+    const buyLength = products.length;
+    const returned = products.filter((p) => p.status === "returned").length;
+    const retained = buyLength - returned;
+    return res.json({ retained, returned });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
 module.exports = router;
