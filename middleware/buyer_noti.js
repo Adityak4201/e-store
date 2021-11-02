@@ -1,13 +1,11 @@
+const Profile = require("../models/profileModel");
 
-const Profile = require('../models/profileModel');
-
-
-var buyernoti = async function (buyername, notification) {
+var buyernoti = async function (buyername, type, notification) {
   var datetime = new Date();
 
   Profile.findOneAndUpdate(
     { username: buyername },
-    { $push: { noti: {"noti": notification, "date": datetime } } },
+    { $push: { noti: { noti: notification, type: type, date: datetime } } },
     function (error, success) {
       if (error) {
         console.log(error);
@@ -17,6 +15,6 @@ var buyernoti = async function (buyername, notification) {
       }
     }
   );
-}
+};
 
 module.exports = buyernoti;

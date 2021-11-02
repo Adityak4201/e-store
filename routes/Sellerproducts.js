@@ -256,10 +256,12 @@ router.post("/updateStatus", auth, async (req, res) => {
       }
       var noti_to_seller = await SellerNoti(
         req.user.username,
+        "order",
         "Product Status Has been updated to " + status
       );
       var noti_to_buyer = await BuyerNoti(
         updatedOrder.buyername,
+        "order",
         "Product has been " + status
       );
       res.send({ updatedOrder });
