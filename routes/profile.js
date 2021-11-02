@@ -273,11 +273,11 @@ router.route("/chatWithUser").post(auth, (req, res) => {
 });
 
 // all recent chats
-router.route("/recentChat").post(async (req, res) => {
+router.route("/recentChat").post(auth, async (req, res) => {
   try {
     const response = await message_Seller
       .find(
-        { $or: [{ to: req.body.username }, { by: req.body.username }] },
+        { $or: [{ to: req.user.username }, { by: req.user.username }] },
         "by to"
       )
       .sort({ date: -1 })
@@ -286,14 +286,14 @@ router.route("/recentChat").post(async (req, res) => {
     const lastmessaged = [];
     response.forEach((element) => {
       if (
-        (element["by"] == req.body.username) &
+        (element["by"] == req.user.username) &
         (lastmessaged.indexOf(element["to"]) === -1)
       ) {
         lastmessaged.push(element["to"]);
       }
 
       if (
-        (element["to"] == req.body.username) &
+        (element["to"] == req.user.username) &
         (lastmessaged.indexOf(element["by"]) === -1)
       ) {
         lastmessaged.push(element["by"]);
@@ -307,8 +307,8 @@ router.route("/recentChat").post(async (req, res) => {
       var message = await message_Seller
         .findOne({
           $or: [
-            { to: req.body.username, by: lastmessaged[i] },
-            { to: lastmessaged[i], by: req.body.username },
+            { to: req.user.username, by: lastmessaged[i] },
+            { to: lastmessaged[i], by: req.user.username },
           ],
         })
         .sort({ date: -1 })
