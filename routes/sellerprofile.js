@@ -413,4 +413,24 @@ router.get("/getSellerOrdersByLimit", auth, async (req, res) => {
   }
 });
 
+router.post("/getOrdersForSellerByLimit", auth, async (req, res) => {
+  if (req.user.role !== "admin")
+    return res.status(404).json({ error: "Login to see orders' list" });
+
+  try {
+    const { buyerid, page, limit } = req.body;
+    const startindex = (parseInt(page) - 1) * parseInt(limit);
+    const { username } = req.user;
+    const seller = await Profile.findOne({ username });
+    const ordersList = await ShopProduct.find({ sellerid: seller._id, buyerid })
+      .limit(limit)
+      .skip(startindex)
+      .exec();
+    if (!ordersList || ordersList.length === 0) throw "No Orders";
+    return res.json({ ordersList });
+  } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
 module.exports = router;
