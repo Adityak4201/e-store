@@ -49,10 +49,10 @@ router
       reqFiles.push("/products/" + req.files[i].filename);
     }
 
-    Product.findOneAndUpdate(
+    await Product.findOneAndUpdate(
       { _id: req.params.id },
       {
-        $set: {
+        $push: {
           coverImage: reqFiles,
         },
       },
@@ -67,11 +67,23 @@ router
     );
   });
 
+// router.post("/deleteCoverImage", auth, async (req, res) => {
+//   if(req.user.role !== 'admin')
+//     return res.status(404).json({ error: "Login to remove product image!!" });
+
+//   try {
+//     const { path } = req.body;
+
+//   } catch(error) {
+//     return res.status(403).json({error})
+//   }
+// });
+
 router.route("/Add").post(auth, (req, res) => {
   if (req.user.role != "admin") {
     return res
       .status(404)
-      .send({ msg: "You can't add profile create a seller account" });
+      .json({ error: "You can't add profile create a seller account" });
   }
   console.log(req.user, req.body);
   // console.log(req.user);
@@ -256,10 +268,12 @@ router.post("/updateStatus", auth, async (req, res) => {
       }
       var noti_to_seller = await SellerNoti(
         req.user.username,
+        "order",
         "Product Status Has been updated to " + status
       );
       var noti_to_buyer = await BuyerNoti(
         updatedOrder.buyername,
+        "order",
         "Product has been " + status
       );
       res.send({ updatedOrder });

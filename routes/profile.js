@@ -460,19 +460,25 @@ router.post("/cancelOrder", auth, async (req, res) => {
     { status },
     { new: true, runValidators: true }
   )
-    .then((cancelledOrder) => {
+    .then(async (cancelledOrder) => {
       if (!cancelledOrder)
         return res
           .status(402)
           .json({ error: "Order has been already rejected/cancelled" });
-      // var noti_to_seller = SellerNoti(
-      //   req.user._id,
-      //   "Product Status Has been updated to " + status
-      // );
-      // var noti_to_buyer = BuyerNoti(
-      //   updatedOrder.buyerid,
-      //   "Product has been " + status + " by the seller"
-      // );
+
+      const seller = await SellerProfile.findOne({
+        _id: cancelledOrder.sellerid,
+      });
+      var noti_to_seller = SellerNoti(
+        seller.username,
+        "order",
+        "Product Status Has been updated to " + status
+      );
+      var noti_to_buyer = BuyerNoti(
+        req.user.username,
+        "order",
+        "Product has been " + status + " by the seller"
+      );
       return res.send({ cancelledOrder });
     })
     .catch((error) => {

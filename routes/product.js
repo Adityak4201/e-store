@@ -237,10 +237,12 @@ router.route("/buyProduct").post(auth, async (req, res) => {
     Buy_Item.save().then(async (result) => {
       var noti_to_seller = await SellerNoti(
         req.body.sellername,
+        "order",
         "Product Has Been Requested by " + req.user.username
       );
       var noti_to_buyer = await BuyerNoti(
         req.user.username,
+        "order",
         "Product Requested waiting For Shop To Accept Your Order"
       );
       res.json({ data: result });
