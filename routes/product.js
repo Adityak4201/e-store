@@ -44,6 +44,13 @@ router.route("/IdProduct/:id").get((req, res) => {
   });
 });
 
+router.route("/getProdImg/:id").get((req, res) => {
+  Product.findOne({ _id: req.params.id, active: true }, "coverImage", (err, result) => {
+    if (err) return res.status(403).send(err);
+    return res.send(result);
+  });
+});
+
 router.route("/SellerProduct/:username").get((req, res) => {
   Product.find(
     { username: req.params.username, active: true },
