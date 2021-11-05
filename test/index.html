@@ -1,0 +1,142 @@
+<!-- Inside index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="This is a demo of Web integration
+		of Razorpay in NodeJS"
+      author="Mr. Twinkle Sharma"
+    />
+    <title>Razorpay Web-Integration</title>
+  </head>
+
+  <body>
+    <hr />
+    <h2>Advanced Data Structures & Algorithms Course</h2>
+    <h3>Description</h3>
+
+    <ul>
+      <li id="desc">Best Course for SDE placements</li>
+      <li id="lang">
+        Available in 4 major Languages JAVA, C/C++, Python, Javascript
+      </li>
+      <li id="access">Lifetime Access</li>
+    </ul>
+
+    <span>
+      Cost:- <span id="order-amt">499</span> Paise
+      <button id="order-button1">Create Order</button>
+      <input id="orderId" type="text" placeholder="orderId" />
+      <button id="pay-button">Pay Now & Get Access</button>
+      <label>Order id :</label><input type="text" id="order-id" />
+      <br />
+      <label>payment id :</label><input type="text" id="order-pay-id" />
+      <br />
+      <label>Signature :</label><input type="text" id="order-sig" />
+      <button id="verify_button">Verify Order</button>
+    </span>
+    <hr />
+
+    <!-- Processing Payment Checkout -->
+    <!-- We will write code for payment here,
+		Replace this comment with the code we
+		are explaining below in step 5 of the
+		article -->
+
+    <!--Inside index.html -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      document.getElementById("order-button1").onclick = function (e) {
+        var url = "http://localhost:3000/products/createOrder";
+        var params = {
+          amount: document.getElementById("order-amt").innerHTML,
+          currency: "INR",
+          receipt: "su001",
+          notes: {
+            description: document.getElementById("desc").innerHTML,
+            language: document.getElementById("lang").innerHTML,
+            access: document.getElementById("access").innerHTML,
+          },
+        };
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function (res) {
+          if (xmlHttp.readyState === 4) {
+            res = JSON.parse(xmlHttp.responseText);
+            document.getElementById("orderId").value = res.id;
+          }
+        };
+        xmlHttp.open("POST", url, true); // false for synchronous request
+        xmlHttp.setRequestHeader("Content-type", "application/json");
+        xmlHttp.send(JSON.stringify(params));
+      };
+
+      document.getElementById("pay-button").onclick = function (e) {
+        var options = {
+          key: "rzp_test_O7q0EhSlhM8o2B", //Enter your razorpay key
+          currency: "INR",
+          name: "Razor Tutorial",
+          description: "Razor Test Transaction",
+          image: "http://zimbly.menu/assets/Zimplyeat-Logo-12%20copy.png",
+          order_id: document.getElementById("orderId").value,
+          handler: function (response) {
+            document.getElementById("order-pay-id").value =
+              response.razorpay_payment_id;
+            document.getElementById("order-id").value =
+              response.razorpay_order_id;
+            document.getElementById("order-sig").value =
+              response.razorpay_signature;
+          },
+          theme: {
+            color: "#ED1C24",
+          },
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on("payment.failed", function (response) {
+          alert(response.error.code);
+          alert(response.error.description);
+          alert(response.error.source);
+          alert(response.error.step);
+          alert(response.error.reason);
+          alert(response.error.metadata.order_id);
+          alert(response.error.metadata.payment_id);
+        });
+        rzp1.open();
+        e.preventDefault();
+      };
+
+      document.getElementById("verify_button").onclick = function (e) {
+        var url = "http://localhost:3000/products/verifyOrder";
+        var params = {
+          paymentmethod: {
+            razorpay_order_id: document.getElementById("order-id").value,
+            razorpay_payment_id: document.getElementById("order-pay-id").value,
+            razorpay_signature: document.getElementById("order-sig").value,
+          },
+          ordertype: "home delivery",
+          productdetails: [
+            { _id: "613460e0dd663e2ac4a92815", count: 2 },
+            { _id: "61347d0bac9e820694445ca6", count: 1 },
+          ],
+          sellerid: "613c5adf1091dd2b18e23ccf",
+          sellername : "piyush puniya",
+          buyeraddress: "police line gzb",
+          buyerphone: "2222222222",
+          subtotal: document.getElementById("order-amt").innerHTML,
+          shippingcost: 20,
+        };
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function (res) {
+          if (xmlHttp.readyState === 4) {
+            alert(xmlHttp.responseText);
+          }
+        };
+        xmlHttp.open("POST", url, true); // false for synchronous request
+        xmlHttp.setRequestHeader("Content-type", "application/json");
+        xmlHttp.setRequestHeader("x-auth-token" , "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTNjNTdlNTBiOTY5ZjZkZWM4M2Q1NDIiLCJyb2xsIjoiYWRtaW4iLCJpYXQiOjE2MzU3NTA4Njl9.Z0WPiSdALC74q-dzMKr2rxWNSeEn_34Yi5TTebTh3GQ")
+        xmlHttp.send(JSON.stringify(params));
+      };
+    </script>
+  </body>
+</html>

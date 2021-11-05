@@ -7,6 +7,7 @@ const USERProfile = require("../models/profileModel");
 const ShopProduct = require("../models/shoppingModel");
 const SellerNoti = require("../middleware/seller_noti");
 const BuyerNoti = require("../middleware/buyer_noti");
+const Razorpay = require("Razorpay");
 
 const auth = require("../middleware/auth");
 const fs = require("fs");
@@ -45,10 +46,14 @@ router.route("/IdProduct/:id").get((req, res) => {
 });
 
 router.route("/getProdImg/:id").get((req, res) => {
-  Product.findOne({ _id: req.params.id, active: true }, "coverImage", (err, result) => {
-    if (err) return res.status(403).send(err);
-    return res.send(result);
-  });
+  Product.findOne(
+    { _id: req.params.id, active: true },
+    "coverImage",
+    (err, result) => {
+      if (err) return res.status(403).send(err);
+      return res.send(result);
+    }
+  );
 });
 
 router.route("/SellerProduct/:username").get((req, res) => {
@@ -82,8 +87,6 @@ router.route("/SellerProductByLimit/:username").get(async (req, res) => {
 });
 
 router.route("/getOtherProduct").get(auth, (req, res) => {
-
-
   Product.find(
     { username: { $ne: req.user.username }, active: true },
     (err, result) => {
@@ -99,16 +102,17 @@ router.route("/getOtherProductByLimit").get(auth, async (req, res) => {
   const startindex = (page - 1) * limit;
 
   try {
-    
-    var prods = await   Product.find({ username: { $ne: req.user.username }, active: true })
-    .limit(limit)
-    .skip(startindex)
-    .exec();
-    res.json({otherprodsByLimit : prods})
+    var prods = await Product.find({
+      username: { $ne: req.user.username },
+      active: true,
+    })
+      .limit(limit)
+      .skip(startindex)
+      .exec();
+    res.json({ otherprodsByLimit: prods });
   } catch (error) {
-    res.json({err : error})
+    res.json({ err: error });
   }
-
 });
 
 router.route("/AddToCart").post(auth, async (req, res) => {
@@ -218,6 +222,72 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
     console.log(error);
     return res.status(402).send({ error });
   }
+});
+
+//----------------------Pay For Product---------------------------
+
+const razorpayInstance = new Razorpay({
+  key_id: "rzp_test_O7q0EhSlhM8o2B", // your `KEY_ID`
+  key_secret: "U4iA3CaZoEwZEP8lXa4OVid6", // your `KEY_SECRET`
+});
+
+router.post("/createOrder", (req, res) => {
+  // STEP 1:
+  const { amount, currency, receipt, notes } = req.body;
+
+  // STEP 2:
+  razorpayInstance.orders.create(
+    { amount, currency, receipt, notes },
+    (err, order) => {
+      //STEP 3 & 4:
+      if (!err) res.json(order);
+      else res.send(err);
+    }
+  );
+});
+
+router.post("/verifyOrder", auth, async (req, res) => {
+  body = req.body.paymentmethod.razorpay_order_id + "|" + req.body.paymentmethod.razorpay_payment_id;
+  var crypto = require("crypto");
+  var expectedSignature = crypto
+    .createHmac("sha256", "U4iA3CaZoEwZEP8lXa4OVid6")
+    .update(body.toString())
+    .digest("hex");
+  console.log("sig" + req.body.paymentmethod.razorpay_signature);
+  console.log("sig" + expectedSignature);
+  var response = { status: "failure" };
+
+  
+  if (expectedSignature === req.body.paymentmethod.razorpay_signature) {
+    response = { status: "success" };
+
+
+    try {
+      const Buy_Item = ShopProduct({
+        buyerid: req.user._id,
+        buyername: req.user.username,
+        ...req.body,
+      });
+  
+      Buy_Item.save().then(async (result) => {
+        var noti_to_seller = await SellerNoti(
+          req.body.sellername,
+          "order",
+          "Product Has Been Requested by " + req.user.username
+        );
+        var noti_to_buyer = await BuyerNoti(
+          req.user.username,
+          "order",
+          "Product Requested waiting For Shop To Accept Your Order"
+        );
+        res.json({ data: result  , res : response});
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(402).send({ error });
+    }
+  }
+
 });
 
 router.route("/buyProduct").post(auth, async (req, res) => {
