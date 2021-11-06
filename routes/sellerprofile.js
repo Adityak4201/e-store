@@ -5,7 +5,8 @@ const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
-
+const Razorpay = require("Razorpay");
+const checkSubs = require("../middleware/checkSubscription");
 router.get("/", auth, async (req, res) => {
   res.send({ msg: "Get Your profile", role: req.user.role });
 });
@@ -101,10 +102,91 @@ router.get("/profile", auth, async (req, res) => {
   });
 });
 
+//--------------------buy subscription-----------------------------------
+
+const razorpayInstance = new Razorpay({
+  key_id: "rzp_test_O7q0EhSlhM8o2B", // your `KEY_ID`
+  key_secret: "U4iA3CaZoEwZEP8lXa4OVid6", // your `KEY_SECRET`
+});
+
+router.post("/createOrder", (req, res) => {
+  // STEP 1:
+  const { amount, currency, receipt, notes } = req.body;
+
+  // STEP 2:
+  razorpayInstance.orders.create(
+    { amount, currency, receipt, notes },
+    (err, order) => {
+      //STEP 3 & 4:
+      if (!err) res.json(order);
+      else res.send(err);
+    }
+  );
+});
+
+router.post("/verifyOrder", auth, async (req, res) => {
+  body =
+    req.body.paymentmethod.razorpay_order_id +
+    "|" +
+    req.body.paymentmethod.razorpay_payment_id;
+  var crypto = require("crypto");
+  var expectedSignature = crypto
+    .createHmac("sha256", "U4iA3CaZoEwZEP8lXa4OVid6")
+    .update(body.toString())
+    .digest("hex");
+  console.log("sig" + req.body.paymentmethod.razorpay_signature);
+  console.log("sig" + expectedSignature);
+  var response = { status: "failure" };
+
+  
+  if (expectedSignature === req.body.paymentmethod.razorpay_signature) {
+  // if ("aaa" === "aaa") {
+    response = { status: "success" };
+
+    req.body.paymentmethod.pay_status = response;
+
+    try {
+      const { username } = req.user;
+
+      const sub_details = req.body.subdetails;
+
+      sub_details.activationDate = new Date();
+
+      sub_details.paymentmethod = req.body.paymentmethod;
+
+      await Profile.findOneAndUpdate(
+        {
+          username,
+        },
+        { $push: { subscription: sub_details } },
+        { new: true }
+      )
+        .then((subsAdded) => {
+          return res.send({ subsAdded , username : req.user.username });
+        })
+        .catch((error) => {
+          return res.status(404).json({ error: "No Seller Found", err: error });
+        });
+    } catch (error) {
+      console.log(error);
+      return res.status(402).send({ error });
+    }
+  }
+});
+
+//----------------------------------------------------------------------
+
 router.post("/addExtraCharges", auth, async (req, res) => {
-  if (req.user.roll != "admin") {
+
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login as admin to add extra" });
   }
+
+  const check =  await checkSubs(req.user.username);
+  if(check == false){
+    return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
+  }
+
   let { name, value, type } = req.body;
   const { username } = req.user;
   await Profile.findOneAndUpdate(
@@ -183,6 +265,12 @@ router.get("/viewExtraCharges", auth, async (req, res) => {
   if (req.user.roll != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
+
+  const check =  await checkSubs(req.user.username);
+  if(check == false){
+    return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
+  }
+
   try {
     const { username } = req.user;
     const seller = await Profile.findOne({ username });
@@ -197,6 +285,12 @@ router.post("/addStaff", auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to add staff" });
   }
+
+  const check =  await checkSubs(req.user.username);
+  if(check == false){
+    return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
+  }
+
   let { s_position, s_username, s_password } = req.body;
   const { username } = req.user;
   if (!s_position || s_position == "") s_position = "staff";
@@ -280,6 +374,13 @@ router.get("/viewStaff", auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
+
+  const check =  await checkSubs(req.user.username);
+  if(check == false){
+    return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
+  }
+
+
   try {
     const { username } = req.user;
     const seller = await Profile.findOne({ username });
@@ -294,6 +395,8 @@ router.post("/addAbout", auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
+
+  
   const { username } = req.user;
   const { about, return_policy } = req.body;
   await Profile.findOneAndUpdate(

@@ -39,6 +39,7 @@ const Seller_Profile = Schema({
   reviews: { type: Array, default: [] },
   noti: { type: Array, default: [] },
   staff: { type: Array, default: [] },
+  subscription: { type: Array, default: ["null"] },
 });
 
 module.exports = mongoose.model("Seller_Profile", Seller_Profile);

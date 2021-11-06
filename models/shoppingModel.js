@@ -31,8 +31,8 @@ const ShopProduct = Schema({
     required: true,
   },
   paymentmethod: {
-    type: Array,
-    default: [],
+    type: Object,
+    default: {},
     required: true,
   },
   subtotal: {

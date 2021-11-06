@@ -28,12 +28,15 @@
       Cost:- <span id="order-amt">499</span> Paise
       <button id="order-button1">Create Order</button>
       <input id="orderId" type="text" placeholder="orderId" />
+      <br><br>
       <button id="pay-button">Pay Now & Get Access</button>
+      <br><br>
       <label>Order id :</label><input type="text" id="order-id" />
-      <br />
+      <br>
       <label>payment id :</label><input type="text" id="order-pay-id" />
-      <br />
+      <br>
       <label>Signature :</label><input type="text" id="order-sig" />
+      <br><br>
       <button id="verify_button">Verify Order</button>
     </span>
     <hr />
@@ -134,7 +137,7 @@
         };
         xmlHttp.open("POST", url, true); // false for synchronous request
         xmlHttp.setRequestHeader("Content-type", "application/json");
-        xmlHttp.setRequestHeader("x-auth-token" , "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTNjNTdlNTBiOTY5ZjZkZWM4M2Q1NDIiLCJyb2xsIjoiYWRtaW4iLCJpYXQiOjE2MzU3NTA4Njl9.Z0WPiSdALC74q-dzMKr2rxWNSeEn_34Yi5TTebTh3GQ")
+        xmlHttp.setRequestHeader("x-auth-token" , "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTNjNTdlNTBiOTY5ZjZkZWM4M2Q1NDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MzYxMDc5Mjh9.i7_Vi0e36DxoasHIc6HyvbHsRGZxs2EfKhf-hsVtpSQ")
         xmlHttp.send(JSON.stringify(params));
       };
     </script>

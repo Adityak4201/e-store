@@ -8,6 +8,8 @@ const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
 const SellerNoti = require("../middleware/seller_noti");
 const BuyerNoti = require("../middleware/buyer_noti");
+const checkSubs = require("../middleware/checkSubscription");
+
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
@@ -67,27 +69,20 @@ router
     );
   });
 
-// router.post("/deleteCoverImage", auth, async (req, res) => {
-//   if(req.user.role !== 'admin')
-//     return res.status(404).json({ error: "Login to remove product image!!" });
 
-//   try {
-//     const { path } = req.body;
-
-//   } catch(error) {
-//     return res.status(403).json({error})
-//   }
-// });
-
-router.route("/Add").post(auth, (req, res) => {
+router.route("/Add").post(auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res
       .status(404)
       .json({ error: "You can't add profile create a seller account" });
   }
   console.log(req.user, req.body);
-  // console.log(req.user);
-  // console.log(req.body);
+
+  const check =  await checkSubs(req.user.username);
+  if(check == false){
+    return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
+  }
+
   const { username } = req.user;
   const {
     productname,

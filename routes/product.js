@@ -225,7 +225,6 @@ router.route("/RemoveFromCart").post(auth, async (req, res) => {
 });
 
 //----------------------Pay For Product---------------------------
-
 const razorpayInstance = new Razorpay({
   key_id: "rzp_test_O7q0EhSlhM8o2B", // your `KEY_ID`
   key_secret: "U4iA3CaZoEwZEP8lXa4OVid6", // your `KEY_SECRET`
@@ -261,6 +260,8 @@ router.post("/verifyOrder", auth, async (req, res) => {
   if (expectedSignature === req.body.paymentmethod.razorpay_signature) {
     response = { status: "success" };
 
+    req.body.paymentmethod.rzr_pay_status = response;
+    req.body.paymentmethod.pay_status = "pending"
 
     try {
       const Buy_Item = ShopProduct({
@@ -289,6 +290,8 @@ router.post("/verifyOrder", auth, async (req, res) => {
   }
 
 });
+
+//---------------------------------------------------------------------
 
 router.route("/buyProduct").post(auth, async (req, res) => {
   if (req.user.role != "basic") {

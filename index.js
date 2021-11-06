@@ -19,6 +19,8 @@ const visitorrouter = require("./routes/visitor");
 const invoiceRouter = require("./routes/invoice");
 const categoryRouter = require("./routes/category");
 const imageRouter = require("./routes/multiImages");
+const sellersubscriptionrouter = require("./routes/sellerSubscriptions");
+
 
 mongoose.connect(
   "mongodb+srv://piyush:piyush2001@magi2.k3zwz.mongodb.net/test",
@@ -53,6 +55,7 @@ app.use("/visitor", visitorrouter);
 app.use("/invoice", invoiceRouter);
 app.use("/category", categoryRouter);
 app.use("/banner", imageRouter);
+app.use("/sellerSubs", sellersubscriptionrouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.listen(port, () => {
