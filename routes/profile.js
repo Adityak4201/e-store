@@ -513,29 +513,4 @@ router.post("/filterShopsByLocation", async (req, res) => {
   }
 });
 
-router.post("/searchOrdersByDate", async (req, res) => {
-  const { str } = req.body;
-  str = new Date(str);
-  try {
-    const orders = await ShopProduct.find({ date: { $regex: str } });
-
-    if (!orders.length) throw "No Orders Found";
-    return res.json({ orders });
-  } catch (err) {
-    return res.status(404).json({ error: err });
-  }
-});
-
-router.post("/searchOrdersByName", async (req, res) => {
-  const { str } = req.body;
-  try {
-    const orders = await ShopProduct.find({ buyername: { $regex: str } });
-
-    if (!orders.length) throw "No Orders Found";
-    return res.json({ orders });
-  } catch (err) {
-    return res.status(404).json({ error: err });
-  }
-});
-
 module.exports = router;

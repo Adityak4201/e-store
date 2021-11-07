@@ -301,4 +301,35 @@ router.post("/updateStatus", auth, async (req, res) => {
     });
 });
 
+router.post("/searchOrdersByDate", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  const { str } = req.body;
+  str = new Date(str);
+  try {
+    const orders = await ShopProduct.find({ date: { $regex: str } });
+
+    if (!orders.length) throw "No Orders Found";
+    return res.json({ orders });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
+router.post("/searchOrdersByName", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  const { str } = req.body;
+  try {
+    const orders = await ShopProduct.find({ buyername: { $regex: str } });
+
+    if (!orders.length) throw "No Orders Found";
+    return res.json({ orders });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
 module.exports = router;
