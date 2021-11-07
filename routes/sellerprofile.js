@@ -285,12 +285,12 @@ router.post("/searchByExtraCharges", auth, async (req, res) => {
   }
   try {
     const { str } = req.body;
-    const orders = await Profile.find({
+    const extra_charges = await Profile.find({
       "extra_charges.name": { $regex: str },
     });
 
-    if (!orders.length) throw "No Orders Found";
-    return res.json({ orders });
+    if (!extra_charges.length) throw "No extra charges Found";
+    return res.json({ extra_charges });
   } catch (err) {
     return res.status(404).json({ error: err });
   }
@@ -402,6 +402,25 @@ router.get("/viewStaff", auth, async (req, res) => {
     return res.json({ staff: seller.staff });
   } catch (error) {
     return res.status(403).json({ error });
+  }
+});
+
+router.post("/searchByStaffUsername", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  try {
+    const { str } = req.body;
+    const { username } = req.user;
+    const staff = await Profile.find({
+      username,
+      "staff.s_username": { $regex: str },
+    });
+
+    if (!staff.length) throw "No staff Found";
+    return res.json({ staff });
+  } catch (err) {
+    return res.status(404).json({ error: err });
   }
 });
 
