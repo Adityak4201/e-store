@@ -18,5 +18,25 @@ router.post("/createSub", async (req, res) => {
     });
 });
 
+router.get("/getSubs", async (req, res) => {
+  Subs.find({} , (error , result)=>{
+    if(err){
+      res.status(404).json({err : err})
+    }
+
+    res.status(200).json({subs : result})
+  })
+});
+
+router.get("/getSub/:id", async (req, res) => {
+  Subs.find({_id : req.params.id} , (error , result)=>{
+    if(err){
+      res.status(404).json({err : err})
+    }
+
+    res.status(200).json({subs : result})
+  })
+});
+
 module.exports = router;
 
