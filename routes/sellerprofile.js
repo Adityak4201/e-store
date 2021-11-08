@@ -5,7 +5,7 @@ const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
-const Razorpay = require("Razorpay");
+const Razorpay = require("razorpay");
 const checkSubs = require("../middleware/checkSubscription");
 router.get("/", auth, async (req, res) => {
   res.send({ msg: "Get Your profile", role: req.user.role });

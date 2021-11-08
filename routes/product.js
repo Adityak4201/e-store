@@ -7,7 +7,7 @@ const USERProfile = require("../models/profileModel");
 const ShopProduct = require("../models/shoppingModel");
 const SellerNoti = require("../middleware/seller_noti");
 const BuyerNoti = require("../middleware/buyer_noti");
-const Razorpay = require("Razorpay");
+const Razorpay = require("razorpay");
 
 const auth = require("../middleware/auth");
 const fs = require("fs");
@@ -246,7 +246,10 @@ router.post("/createOrder", (req, res) => {
 });
 
 router.post("/verifyOrder", auth, async (req, res) => {
-  body = req.body.paymentmethod.razorpay_order_id + "|" + req.body.paymentmethod.razorpay_payment_id;
+  body =
+    req.body.paymentmethod.razorpay_order_id +
+    "|" +
+    req.body.paymentmethod.razorpay_payment_id;
   var crypto = require("crypto");
   var expectedSignature = crypto
     .createHmac("sha256", "U4iA3CaZoEwZEP8lXa4OVid6")
@@ -256,12 +259,11 @@ router.post("/verifyOrder", auth, async (req, res) => {
   console.log("sig" + expectedSignature);
   var response = { status: "failure" };
 
-  
   if (expectedSignature === req.body.paymentmethod.razorpay_signature) {
     response = { status: "success" };
 
     req.body.paymentmethod.rzr_pay_status = response;
-    req.body.paymentmethod.pay_status = "pending"
+    req.body.paymentmethod.pay_status = "pending";
 
     try {
       const Buy_Item = ShopProduct({
@@ -269,7 +271,7 @@ router.post("/verifyOrder", auth, async (req, res) => {
         buyername: req.user.username,
         ...req.body,
       });
-  
+
       Buy_Item.save().then(async (result) => {
         var noti_to_seller = await SellerNoti(
           req.body.sellername,
@@ -281,14 +283,13 @@ router.post("/verifyOrder", auth, async (req, res) => {
           "order",
           "Product Requested waiting For Shop To Accept Your Order"
         );
-        res.json({ data: result  , res : response});
+        res.json({ data: result, res: response });
       });
     } catch (error) {
       console.log(error);
       return res.status(402).send({ error });
     }
   }
-
 });
 
 //---------------------------------------------------------------------
