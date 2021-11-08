@@ -5,7 +5,7 @@ const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const path = require("path");
-const Razorpay = require("Razorpay");
+const Razorpay = require("razorpay");
 const checkSubs = require("../middleware/checkSubscription");
 router.get("/", auth, async (req, res) => {
   res.send({ msg: "Get Your profile", role: req.user.role });
@@ -138,9 +138,8 @@ router.post("/verifyOrder", auth, async (req, res) => {
   console.log("sig" + expectedSignature);
   var response = { status: "failure" };
 
-  
   if (expectedSignature === req.body.paymentmethod.razorpay_signature) {
-  // if ("aaa" === "aaa") {
+    // if ("aaa" === "aaa") {
     response = { status: "success" };
 
     req.body.paymentmethod.pay_status = response;
@@ -162,7 +161,7 @@ router.post("/verifyOrder", auth, async (req, res) => {
         { new: true }
       )
         .then((subsAdded) => {
-          return res.send({ subsAdded , username : req.user.username });
+          return res.send({ subsAdded, username: req.user.username });
         })
         .catch((error) => {
           return res.status(404).json({ error: "No Seller Found", err: error });
@@ -177,13 +176,12 @@ router.post("/verifyOrder", auth, async (req, res) => {
 //----------------------------------------------------------------------
 
 router.post("/addExtraCharges", auth, async (req, res) => {
-
   if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login as admin to add extra" });
   }
 
-  const check =  await checkSubs(req.user.username);
-  if(check == false){
+  const check = await checkSubs(req.user.username);
+  if (check == false) {
     return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
   }
 
@@ -266,8 +264,8 @@ router.get("/viewExtraCharges", auth, async (req, res) => {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
 
-  const check =  await checkSubs(req.user.username);
-  if(check == false){
+  const check = await checkSubs(req.user.username);
+  if (check == false) {
     return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
   }
 
@@ -281,13 +279,30 @@ router.get("/viewExtraCharges", auth, async (req, res) => {
   }
 });
 
+router.post("/searchByExtraCharges", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  try {
+    const { str } = req.body;
+    const extra_charges = await Profile.find({
+      "extra_charges.name": { $regex: str },
+    });
+
+    if (!extra_charges.length) throw "No extra charges Found";
+    return res.json({ extra_charges });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
 router.post("/addStaff", auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to add staff" });
   }
 
-  const check =  await checkSubs(req.user.username);
-  if(check == false){
+  const check = await checkSubs(req.user.username);
+  if (check == false) {
     return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
   }
 
@@ -375,11 +390,10 @@ router.get("/viewStaff", auth, async (req, res) => {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
 
-  const check =  await checkSubs(req.user.username);
-  if(check == false){
+  const check = await checkSubs(req.user.username);
+  if (check == false) {
     return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
   }
-
 
   try {
     const { username } = req.user;
@@ -391,12 +405,30 @@ router.get("/viewStaff", auth, async (req, res) => {
   }
 });
 
+router.post("/searchByStaffUsername", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  try {
+    const { str } = req.body;
+    const { username } = req.user;
+    const staff = await Profile.find({
+      username,
+      "staff.s_username": { $regex: str },
+    });
+
+    if (!staff.length) throw "No staff Found";
+    return res.json({ staff });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
 router.post("/addAbout", auth, async (req, res) => {
   if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
 
-  
   const { username } = req.user;
   const { about, return_policy } = req.body;
   await Profile.findOneAndUpdate(

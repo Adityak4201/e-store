@@ -41,9 +41,10 @@ router.route("/").get(auth, (req, res) => {
 });
 
 router
-  .route("/add/coverImage/:id")
+  .route("/add/coverImage")
   .post(auth, upload.array("coverImage", 6), async (req, res) => {
     // console.log("upload image");
+    const { id } = req.body;
     // await compress(req.file.filename);
     // console.log(req.files);
     const reqFiles = [];
@@ -52,7 +53,7 @@ router
     }
 
     await Product.findOneAndUpdate(
-      { _id: req.params.id },
+      { _id: id },
       {
         $push: {
           coverImage: reqFiles,
@@ -69,6 +70,27 @@ router
     );
   });
 
+router.post("/deleteCoverImage", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res
+      .status(404)
+      .json({ error: "Login first to delete product images" });
+  }
+
+  const { id, image_path } = req.body;
+  await Product.findOneAndUpdate(
+    { _id: id },
+    { $pull: { coverImage: image_path } },
+    { new: true },
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(404).json({ error: err });
+      }
+      return res.json(result);
+    }
+  );
+});
 
 router.route("/Add").post(auth, async (req, res) => {
   if (req.user.role != "admin") {
@@ -78,8 +100,8 @@ router.route("/Add").post(auth, async (req, res) => {
   }
   console.log(req.user, req.body);
 
-  const check =  await checkSubs(req.user.username);
-  if(check == false){
+  const check = await checkSubs(req.user.username);
+  if (check == false) {
     return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
   }
 
@@ -277,6 +299,37 @@ router.post("/updateStatus", auth, async (req, res) => {
       if (error) return res.status(403).json({ error: error });
       else res.status(404).json({ error: "No order found" });
     });
+});
+
+router.post("/searchOrdersByDate", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  const { str } = req.body;
+  str = new Date(str);
+  try {
+    const orders = await ShopProduct.find({ date: { $regex: str } });
+
+    if (!orders.length) throw "No Orders Found";
+    return res.json({ orders });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+});
+
+router.post("/searchOrdersByName", auth, async (req, res) => {
+  if (req.user.role != "admin") {
+    return res.status(404).send({ msg: "Login to search orders" });
+  }
+  const { str } = req.body;
+  try {
+    const orders = await ShopProduct.find({ buyername: { $regex: str } });
+
+    if (!orders.length) throw "No Orders Found";
+    return res.json({ orders });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
 });
 
 module.exports = router;

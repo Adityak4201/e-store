@@ -100,7 +100,6 @@ router.route("/add").post(auth, (req, res) => {
     });
 });
 
-
 router.route("/editAddress").post(auth, (req, res) => {
   if (req.user.role != "basic") {
     return res
@@ -242,28 +241,29 @@ router.route("/message").post(auth, (req, res) => {
 });
 
 router.route("/getProfileImg/:username").get(async (req, res) => {
-
   try {
-    var img1 = await Profile.findOne({username: req.params.username }, "profileimg").exec();
+    var img1 = await Profile.findOne(
+      { username: req.params.username },
+      "profileimg"
+    ).exec();
 
-    var img2 = await SellerProfile.findOne({ username: req.params.username }, "profileimg").exec();
+    var img2 = await SellerProfile.findOne(
+      { username: req.params.username },
+      "profileimg"
+    ).exec();
 
     var img = "";
-    if(img1 == null){
+    if (img1 == null) {
       img = img2;
     }
 
-    if(img2 == null){
+    if (img2 == null) {
       img = img1;
     }
-    res.status(202).json({profilepic : img})
-    
-
+    res.status(202).json({ profilepic: img });
   } catch (error) {
-    res.status(404).json({error : error})
-
+    res.status(404).json({ error: error });
   }
-
 });
 
 // all chats of a user whoever he messaged or from whoever he recived message
