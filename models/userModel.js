@@ -11,7 +11,7 @@ const user = userschema({
   role: {
     type: String,
     default: "basic",
-    enum: ["basic", "admin"],
+    enum: ["basic", "admin" , "superadmin"],
   },
   username: {
     type: String,
