@@ -151,7 +151,7 @@ router.route("/getAddress").get(auth, async (req, res) => {
   }
 });
 
-router.get("/shops", async (req, res) => {
+router.get("/shopsByLimit", async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
 
@@ -160,6 +160,11 @@ router.get("/shops", async (req, res) => {
     .limit(limit)
     .skip(startindex)
     .exec();
+  res.json(shops);
+});
+
+router.get("/shops", async (req, res) => {
+  const shops = await SellerProfile.find({});
   res.json(shops);
 });
 
