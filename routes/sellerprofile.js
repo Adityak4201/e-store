@@ -118,7 +118,10 @@ router.post("/createOrder", (req, res) => {
     { amount, currency, receipt, notes },
     (err, order) => {
       //STEP 3 & 4:
-      if (!err) res.json(order);
+      if (!err) {
+        console.log(order);
+        res.json(order);
+      } 
       else res.send(err);
     }
   );
