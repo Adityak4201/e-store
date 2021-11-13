@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 const Razorpay = require("razorpay");
 const checkSubs = require("../middleware/checkSubscription");
+
 router.get("/", auth, async (req, res) => {
   res.send({ msg: "Get Your profile", role: req.user.role });
 });
@@ -36,8 +37,8 @@ const upload = multer({
 
 router
   .route("/add/image")
-  .patch(auth, upload.single("profileimg"), (req, res) => {
-    console.log("user is is ", req.user._id);
+  .post(auth, upload.single("profileimg"), async (req, res) => {
+    // console.log("user is ", req.user._id);
     if (req.user.role != "admin") {
       return res
         .status(404)
@@ -62,6 +63,33 @@ router
       }
     );
   });
+
+router.post("/add/image", auth, upload.single("coverimg"), async (req, res) => {
+  // console.log("user is ", req.user._id);
+  if (req.user.role != "admin") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add profile create a seller account" });
+  }
+
+  Profile.findOneAndUpdate(
+    { username: req.user.username },
+    {
+      $set: {
+        coverimg: req.file.filename,
+      },
+    },
+    { new: true },
+    (err, profile) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "image added successfully updated",
+        data: profile,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
 
 router.route("/add").post(auth, (req, res) => {
   if (req.user.role != "admin") {
@@ -121,8 +149,7 @@ router.post("/createOrder", (req, res) => {
       if (!err) {
         console.log(order);
         res.json(order);
-      } 
-      else res.send(err);
+      } else res.send(err);
     }
   );
 });

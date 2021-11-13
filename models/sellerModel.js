@@ -6,6 +6,10 @@ const Seller_Profile = Schema({
     type: String,
     default: "",
   },
+  coverimg: {
+    type: String,
+    default: "",
+  },
   username: {
     type: String,
   },
