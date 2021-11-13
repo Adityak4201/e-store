@@ -64,7 +64,7 @@ router
     );
   });
 
-router.post("/add/image", auth, upload.single("coverimg"), async (req, res) => {
+router.post("/coverImg", auth, upload.single("coverimg"), async (req, res) => {
   // console.log("user is ", req.user._id);
   if (req.user.role != "admin") {
     return res
