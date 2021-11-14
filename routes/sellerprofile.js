@@ -332,6 +332,7 @@ router.post("/addStaff", auth, async (req, res) => {
   }
 
   const check = await checkSubs(req.user.username);
+  console.log(check);
   if (check == false) {
     return res.status(404).send({ msg: "Plz Buy A Subscription Plan" });
   }

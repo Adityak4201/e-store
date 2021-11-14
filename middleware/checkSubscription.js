@@ -7,7 +7,8 @@ const vaildateSubs = async function (username, res) {
   var sellerSubs = await SellerProfile.findOne(
     { username: username },
     "subscription"
-  ).exec();
+  );
+  // console.log(sellerSubs);
   if (sellerSubs == null) {
     return false;
   }
@@ -22,6 +23,7 @@ const vaildateSubs = async function (username, res) {
   }).exec();
 
   console.log("subDetails", subDetails);
+  if (subDetails === null) return false;
 
   var endTime = subDetails.endtime;
 
