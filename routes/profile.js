@@ -435,7 +435,11 @@ router.post("/updateShopReview", auth, async (req, res) => {
     await SellerProfile.findOneAndUpdate(
       { _id: shop_id, "reviews.customer_id": _id },
       {
-        $set: { "reviews.$.ratings": ratings, "reviews.$.comments": comments },
+        $set: {
+          "reviews.$.ratings": ratings,
+          "reviews.$.comments": comments,
+          time: new Date(),
+        },
       },
       { new: true },
       function (err, shop) {
