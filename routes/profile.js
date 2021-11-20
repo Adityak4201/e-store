@@ -438,7 +438,7 @@ router.post("/updateShopReview", auth, async (req, res) => {
         $set: {
           "reviews.$.ratings": ratings,
           "reviews.$.comments": comments,
-          time: new Date(),
+          "reviews.$.time": new Date(),
         },
       },
       { new: true },
