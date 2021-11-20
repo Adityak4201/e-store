@@ -308,7 +308,7 @@ router.post("/searchOrdersByDate", auth, async (req, res) => {
   const { str } = req.body;
   str = new Date(str);
   try {
-    const orders = await ShopProduct.find({ date: { $regex: str } });
+    const orders = await ShopProduct.find({ date: { $regex: str }, sellerid: req.user.username });
 
     if (!orders.length) throw "No Orders Found";
     return res.json({ orders });
@@ -323,7 +323,7 @@ router.post("/searchOrdersByName", auth, async (req, res) => {
   }
   const { str } = req.body;
   try {
-    const orders = await ShopProduct.find({ buyername: { $regex: str } });
+    const orders = await ShopProduct.find({ buyername: { $regex: str },sellerid: req.user.username });
 
     if (!orders.length) throw "No Orders Found";
     return res.json({ orders });
