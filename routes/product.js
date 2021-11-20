@@ -350,6 +350,7 @@ router.post("/addProductReview", auth, async (req, res) => {
           customer_id: _id,
           ratings,
           comments,
+          time: new Date(),
         },
       },
     };

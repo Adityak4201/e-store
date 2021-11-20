@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Profile = require("../models/sellerModel");
+const Product = require("../models/productModel");
 const ShopProduct = require("../models/shoppingModel");
 const auth = require("../middleware/auth");
 const multer = require("multer");
@@ -611,6 +612,23 @@ router.post("/getBuyersRatio", auth, async (req, res) => {
     const retained = buyLength - returned;
     return res.json({ retained, returned });
   } catch (error) {
+    return res.status(403).json({ error });
+  }
+});
+
+router.get("/latestReviews", auth, async (req, res) => {
+  if (req.user.role !== "admin")
+    return res.status(404).json({ error: "Login to see latest reviews" });
+  try {
+    const { username } = req.user;
+    const productReviews = await Product.findOne({ username }, { reviews: 1 });
+    const shopReviews = await Profile.find({ username }, { reviews: 1 });
+    // console.log(productReviews.reviews);
+    const reviews = productReviews.reviews.concat(shopReviews.reviews);
+    reviews.sort((r1, r2) => r1.time - r2.time);
+    return res.json({ reviews });
+  } catch (error) {
+    console.log(error);
     return res.status(403).json({ error });
   }
 });
