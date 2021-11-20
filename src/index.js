@@ -4,11 +4,7 @@ require("dotenv").config();
 // const auth = require('./middleware/auth');
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const port = process.env.PORT || "4000";
-const app = express();
-app.use(cookieParser());
-app.use(cors());
-const swaggerDoc = require("./swagger.json");
+const swaggerDoc = require("../swagger.json");
 const swaggerUi = require("swagger-ui-express");
 const userrouter = require("./routes/user");
 const profilerouter = require("./routes/profile");
@@ -21,6 +17,12 @@ const categoryRouter = require("./routes/category");
 const imageRouter = require("./routes/multiImages");
 const sellersubscriptionrouter = require("./routes/sellerSubscriptions");
 const bookKeepingRouter = require("./routes/bookKeeping");
+
+const port = process.env.PORT || "4000";
+const app = express();
+
+app.use(cookieParser());
+app.use(cors());
 
 mongoose.connect(
   "mongodb+srv://piyush:piyush2001@magi2.k3zwz.mongodb.net/test",

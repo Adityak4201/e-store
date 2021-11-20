@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const config = require("../config");
+const config = require("../../config");
 const methods = require("methods");
 
 const userschema = mongoose.Schema;
@@ -11,7 +11,7 @@ const user = userschema({
   role: {
     type: String,
     default: "basic",
-    enum: ["basic", "admin" , "superadmin"],
+    enum: ["basic", "admin", "superadmin"],
   },
   username: {
     type: String,
