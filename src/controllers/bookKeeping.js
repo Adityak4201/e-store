@@ -8,7 +8,7 @@ exports.addTransaction = async (req, res) => {
     {
       email,
     },
-    { $addToSet: { khata: { p_name, amount, give_take } } },
+    { $addToSet: { khata: { p_name, amount, give_take, time: new Date() } } },
     { new: true, upsert: true }
   )
     .then((statementAdded) => {
@@ -31,7 +31,7 @@ exports.updateTransaction = async (req, res) => {
       email,
       "khata._id": id,
     },
-    { $set: { "khata.$": { p_name, amount, give_take } } },
+    { $set: { "khata.$": { p_name, amount, give_take, time: new Date() } } },
     { new: true }
   )
     .then((statementUpdated) => {

@@ -13,12 +13,15 @@ const Book_Keeping = new Schema({
         required: true,
       },
       amount: {
-        type: Number,
+        type: String,
         required: true,
       },
       give_take: {
         type: String,
         enum: ["give", "take"],
+      },
+      time: {
+        type: Date,
       },
     },
   ],
