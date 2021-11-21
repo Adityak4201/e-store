@@ -23,7 +23,7 @@ exports.addInvoice = async (req, res) => {
     { new: true, upsert: true }
   )
     .then((invoiceAdded) => {
-      console.log(invoiceAdded);
+      // console.log(invoiceAdded);
       return res.send({ invoiceAdded });
     })
     .catch((error) => {
@@ -38,8 +38,10 @@ exports.getAllInvoices = async (req, res) => {
   }
   try {
     const { username } = req.user;
+    // console.log(req.user);
     const seller = await Invoice.findOne({ seller_username: username });
-    if (!seller || !seller.visitor_info || seller.invoices.length === 0)
+    console.log(seller);
+    if (!seller && !seller.invoices && seller.invoices.length === 0)
       throw "No Invoices";
     // console.log(buyersList);
     return res.json({ invoices: seller.invoices });
