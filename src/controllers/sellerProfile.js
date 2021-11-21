@@ -586,11 +586,15 @@ exports.getLatestReviews = async (req, res) => {
     return res.status(404).json({ error: "Login to see latest reviews" });
   try {
     const { username } = req.user;
-    const productReviews = await Product.findOne({ username }, { reviews: 1 });
-    const shopReviews = await Profile.find({ username }, { reviews: 1 });
-    // console.log(productReviews.reviews);
-    const reviews = productReviews.reviews.concat(shopReviews.reviews);
-    reviews.sort((r1, r2) => r1.time - r2.time);
+    const productReviews = await Product.find({ username }, { reviews: 1 });
+    const shopReviews = await Profile.findOne({ username }, { reviews: 1 });
+    let reviews = productReviews.reduce(
+      (prev, curr) => prev.concat(curr.reviews),
+      []
+    );
+    reviews = reviews.concat(shopReviews.reviews);
+    // console.log(reviews, shopReviews);
+    reviews.sort((r1, r2) => r2.time - r1.time);
     return res.json({ reviews });
   } catch (error) {
     console.log(error);
