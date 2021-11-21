@@ -15,10 +15,11 @@ exports.getSellerUsername = async (req, res) => {
 
 exports.uploadProductImages = async (req, res) => {
   // console.log("upload image");
+  // console.log(req);
   const { id } = req.body;
   // await compress(req.file.filename);
   // console.log(req.files);
-  const reqFiles = [];
+  let reqFiles = [];
   for (var i = 0; i < req.files.length; i++) {
     reqFiles.push("/products/" + req.files[i].filename);
   }
@@ -26,7 +27,7 @@ exports.uploadProductImages = async (req, res) => {
   await Product.findOneAndUpdate(
     { _id: id },
     {
-      $push: {
+      $addToSet: {
         coverImage: reqFiles,
       },
     },
@@ -36,6 +37,7 @@ exports.uploadProductImages = async (req, res) => {
         console.log(err);
         return res.status(404).json({ error: err });
       }
+      // console.log(result);
       return res.json(result);
     }
   );

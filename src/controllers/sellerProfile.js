@@ -27,7 +27,7 @@ exports.uploadProfileImg = async (req, res) => {
     { username: req.user.username },
     {
       $set: {
-        profileimg: req.file.filename,
+        profileimg: "/sellerprofile/" + req.file.filename,
       },
     },
     { new: true },
@@ -54,7 +54,7 @@ exports.uploadCoverImg = async (req, res) => {
     { username: req.user.username },
     {
       $set: {
-        coverimg: req.file.filename,
+        coverimg: "/sellerprofile/" + req.file.filename,
       },
     },
     { new: true },

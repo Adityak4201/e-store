@@ -14,13 +14,26 @@ const storage = multer.diskStorage({
     cb(null, "./uploads/products");
   },
   filename: (req, file, cb) => {
-    cb(null, req.params.id + path.extname(file.originalname));
+    cb(null, req.body.id + file.originalname);
   },
 });
 
+const filefilter = (req, file, cb) => {
+  if (
+    file.mimetype == "image/jpeg" ||
+    file.mimetype == "image/png" ||
+    file.mimetype == "image/jpg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 // path.extname(file.originalname)
 const upload = multer({
-  storage: storage,
+  storage,
+  filefilter,
 });
 
 router.get("/", auth, SellerProductsController.getSellerUsername);
