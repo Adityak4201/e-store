@@ -9,7 +9,7 @@ exports.homeRoute = async (req, res) => {
 };
 
 exports.uploadProfileImg = async (req, res) => {
-  if (req.user.role != "basic") {
+  if (req.user.role !== "basic") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a basic account" });
@@ -33,8 +33,26 @@ exports.uploadProfileImg = async (req, res) => {
   );
 };
 
+exports.getProfile = async (req, res) => {
+  if (req.user.role !== "basic")
+    return res
+      .status(403)
+      .json({ error: "Log in as buyer to view your profile" });
+
+  const username = req.user.username;
+  await Profile.findOne({ username }, function (err, docs) {
+    if (err) {
+      console.log(err);
+      return res.status(404).json({ error: err });
+    } else {
+      console.log("Result : ", docs);
+      return res.json(docs);
+    }
+  });
+};
+
 exports.addProfileInfo = async (req, res) => {
-  if (req.user.role != "basic") {
+  if (req.user.role !== "basic") {
     return res
       .status(404)
       .send({ msg: "You can't add profile create a basic account" });

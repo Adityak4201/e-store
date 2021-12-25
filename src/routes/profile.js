@@ -27,6 +27,7 @@ const upload = multer({
 });
 
 router.get("/", auth, BuyerController.homeRoute);
+router.get("/profile", auth, BuyerController.getProfile);
 router.patch(
   "/add/image",
   auth,
