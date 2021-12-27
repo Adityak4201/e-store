@@ -12,7 +12,20 @@ const Profile = Schema({
   phone: {
     type: String,
   },
-  address: { type: Array, default: [] },
+  address: [
+    {
+      add_type: String,
+      fullName: String,
+      houseNo: String,
+      landmark: String,
+      street: String,
+      city: String,
+      state: String,
+      country: String,
+      pincode: Number,
+      phone: Number,
+    },
+  ],
   details: {
     type: String,
   },

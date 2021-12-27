@@ -58,26 +58,9 @@ exports.addProfileInfo = async (req, res) => {
       .send({ msg: "You can't add profile create a basic account" });
   }
 
-  var address = {
-    Type: req.body.addressType,
-    FullName: req.body.fullname,
-    houseno: req.body.housenoAdd,
-    landmark: req.body.landmarkAdd,
-    street: req.body.streetAdd,
-    city: req.body.cityAdd,
-    state: req.body.stateAdd,
-    country: req.body.countryAdd,
-    pincode: req.body.pincodeAdd,
-  };
-
   const profiledata = Profile({
     username: req.user.username,
-    address: address,
-    about: req.user.about,
-    dob: req.body.dob,
-    country: req.body.country,
-    state: req.body.state,
-    city: req.body.city,
+    ...req.body,
   });
   await profiledata
     .save()
@@ -96,23 +79,22 @@ exports.editAddress = async (req, res) => {
       .send({ msg: "You can't add profile create a basic account" });
   }
 
-  var address = {
-    Type: req.body.addressType,
-    FullName: req.body.fullname,
-    houseno: req.body.housenoAdd,
-    landmark: req.body.landmarkAdd,
-    street: req.body.streetAdd,
-    city: req.body.cityAdd,
-    state: req.body.stateAdd,
-    country: req.body.countryAdd,
-    pincode: req.body.pincodeAdd,
-  };
+  const { address } = req.body;
 
   await Profile.findOneAndUpdate(
-    { _id: req.user._id },
+    { username: req.user.username, "address._id": address._id },
     {
       $set: {
-        address: address,
+        "address.$.add_type": address.add_type,
+        "address.$.fullName": address.fullName,
+        "address.$.houseNo": address.houseNo,
+        "address.$.landmark": address.landmark,
+        "address.$.street": address.street,
+        "address.$.city": address.city,
+        "address.$.state": address.state,
+        "address.$.country": address.country,
+        "address.$.pincode": address.pincode,
+        "address.$.phone": address.phone,
       },
     },
     { new: true },
