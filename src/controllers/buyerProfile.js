@@ -76,7 +76,7 @@ exports.editAddress = async (req, res) => {
   if (req.user.role != "basic") {
     return res
       .status(404)
-      .send({ msg: "You can't add profile create a basic account" });
+      .send({ msg: "You can't edit address. Create an account first!!" });
   }
 
   const { address } = req.body;
@@ -95,6 +95,32 @@ exports.editAddress = async (req, res) => {
         "address.$.country": address.country,
         "address.$.pincode": address.pincode,
         "address.$.phone": address.phone,
+      },
+    },
+    { new: true },
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      return res.json(result);
+    }
+  );
+};
+
+exports.addAddress = async (req, res) => {
+  if (req.user.role != "basic") {
+    return res
+      .status(404)
+      .send({ msg: "You can't add address. Create an account first!!" });
+  }
+
+  const { address } = req.body;
+
+  await Profile.findOneAndUpdate(
+    { username: req.user.username },
+    {
+      $push: {
+        address,
       },
     },
     { new: true },
