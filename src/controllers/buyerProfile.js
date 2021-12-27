@@ -58,22 +58,24 @@ exports.addProfileInfo = async (req, res) => {
       .send({ msg: "You can't add profile create a basic account" });
   }
 
-  const profiledata = Profile({
-    username: req.user.username,
-    ...req.body,
-  });
-  await profiledata
-    .save()
+  await Profile.findOneAndUpdate(
+    {
+      username: req.user.username,
+    },
+    { ...req.body },
+    { new: true, upsert: true }
+  )
     .then((result) => {
       res.json({ result });
     })
     .catch((err) => {
-      console.log(err), res.json({ err });
+      console.log(err);
+      res.status(404).json({ error: err });
     });
 };
 
 exports.editAddress = async (req, res) => {
-  if (req.user.role != "basic") {
+  if (req.user.role !== "basic") {
     return res
       .status(404)
       .send({ msg: "You can't edit address. Create an account first!!" });
@@ -101,6 +103,7 @@ exports.editAddress = async (req, res) => {
     (err, result) => {
       if (err) {
         console.log(err);
+        return res.status(404).json({ error: err });
       }
       return res.json(result);
     }
@@ -108,7 +111,7 @@ exports.editAddress = async (req, res) => {
 };
 
 exports.addAddress = async (req, res) => {
-  if (req.user.role != "basic") {
+  if (req.user.role !== "basic") {
     return res
       .status(404)
       .send({ msg: "You can't add address. Create an account first!!" });
@@ -120,17 +123,18 @@ exports.addAddress = async (req, res) => {
     { username: req.user.username },
     {
       $push: {
-        address,
+        address: address,
       },
     },
-    { new: true },
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      return res.json(result);
-    }
-  );
+    { new: true }
+  )
+    .then((response) => {
+      return res.json({ profile: response });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(404).json({ error: err });
+    });
 };
 
 exports.getAddressDetails = async (req, res) => {
@@ -144,8 +148,32 @@ exports.getAddressDetails = async (req, res) => {
       }
     );
   } catch (error) {
-    console.log(err), res.json({ err: err });
+    console.log(err);
+    return res.status(404).json({ error: err });
   }
+};
+
+exports.deleteAddress = async (req, res) => {
+  if (req.user.role !== "basic") {
+    return res
+      .status(404)
+      .send({ msg: "You can't delete address. Create an account first!!" });
+  }
+  const { _id } = req.query;
+  const { username } = req.user;
+  await Profile.updateOne(
+    {
+      username,
+    },
+    { $pull: { address: { _id } } }
+  )
+    .then((deleted) => {
+      // console.log(deleted);
+      return res.json({ msg: "Address Deleted" });
+    })
+    .catch((error) => {
+      return res.status(403).json({ error });
+    });
 };
 
 exports.getShopsByLim = async (req, res) => {

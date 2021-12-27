@@ -57,7 +57,7 @@ exports.deleteTransaction = async (req, res) => {
     { $pull: { khata: { _id: id } } }
   )
     .then((deleted) => {
-      // console.log(deleted);
+      console.log(deleted);
       return res.json({ msg: "Account Statement with given email deleted" });
     })
     .catch((error) => {

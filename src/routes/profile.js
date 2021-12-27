@@ -38,6 +38,7 @@ router.post("/add", auth, BuyerController.addProfileInfo);
 router.post("/editAddress", auth, BuyerController.editAddress);
 router.post("/addAddress", auth, BuyerController.addAddress);
 router.get("/getAddress", auth, BuyerController.getAddressDetails);
+router.delete("/deleteAddress", auth, BuyerController.deleteAddress);
 router.get("/shopsByLimit", BuyerController.getShopsByLim);
 router.get("/shops", BuyerController.getAllShops);
 router.post("/cancelOrder", auth, BuyerController.cancelOrder);
