@@ -137,7 +137,7 @@ exports.Register = async (req, res) => {
           hashPass = await encodeURIComponent(hashPass);
 
           // console.log("----------", hashPass);
-          mytext = `Click here to verify <a href='https://4000-rose-tyrannosaurus-qyfkcmx1.ws-us25.gitpod.io/user/verify?un=${username}&hp=${hashPass}'>Verfiy Now</a>`;
+          mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${username}&hp=${hashPass}'>Verfiy Now</a>`;
           to = req.body.email;
           var mailResponse = await sendmail(subject, mytext, to);
           const user = await getCleanUser(userdata);
@@ -179,7 +179,7 @@ exports.getVerificationMail = async (req, res) => {
     // console.log("before----------", hashPass);
     hashPass = await encodeURIComponent(hashPass);
     // console.log("----------", hashPass);
-    mytext = `Click here to verify <a href='https://4000-rose-tyrannosaurus-qyfkcmx1.ws-us25.gitpod.io/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
+    mytext = `Click here to verify <a href='https://e-store-backend.herokuapp.com/user/verify?un=${req.user.username}&hp=${hashPass}'>Verfiy Now</a>`;
     to = req.user.email;
     var mailResponse = await sendmail(subject, mytext, to);
     // console.log(mailResponse);
