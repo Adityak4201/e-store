@@ -43,6 +43,7 @@ router.get("/shopsByLimit", BuyerController.getShopsByLim);
 router.get("/shops", BuyerController.getAllShops);
 router.post("/cancelOrder", auth, BuyerController.cancelOrder);
 router.get("/getProfileImg/:username", BuyerController.getProfileImg);
+router.get("/getOrders", auth, BuyerController.getBuyersOrders);
 
 // filters
 router.post("/filterBySellerCategory", BuyerController.filterBySellerCategory);

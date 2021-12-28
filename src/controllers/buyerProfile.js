@@ -518,6 +518,23 @@ exports.cancelOrder = async (req, res) => {
     });
 };
 
+exports.getBuyersOrders = async (req, res) => {
+  if (req.user.role !== "basic") {
+    return res.status(404).send({ msg: "Login to get orders list" });
+  }
+  const { _id } = req.user;
+  try {
+    const orders = await ShopProduct.find({
+      buyerid: _id,
+    });
+
+    if (!orders.length) throw "No Orders Found";
+    return res.json({ orders });
+  } catch (err) {
+    return res.status(404).json({ error: err });
+  }
+};
+
 exports.filterShopsByLocation = async (req, res) => {
   try {
     const { country, state, city } = req.body;
