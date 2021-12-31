@@ -203,7 +203,7 @@ exports.addExtraCharges = async (req, res) => {
 };
 
 exports.updateExtraCharges = async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "Login to update extra charges details" });
@@ -233,7 +233,7 @@ exports.updateExtraCharges = async (req, res) => {
 };
 
 exports.deleteExtraCharges = async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res
       .status(404)
       .send({ msg: "Login to delete ExtraCharges details" });
@@ -257,7 +257,7 @@ exports.deleteExtraCharges = async (req, res) => {
 };
 
 exports.viewExtraCharges = async (req, res) => {
-  if (req.user.roll != "admin") {
+  if (req.user.role != "admin") {
     return res.status(404).send({ msg: "Login to see staff list" });
   }
 
