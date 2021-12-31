@@ -15,6 +15,7 @@ const ShopProduct = Schema({
     type: String,
     required: true,
   },
+
   buyerid: {
     type: String,
     required: true,
@@ -42,6 +43,10 @@ const ShopProduct = Schema({
   shippingcost: {
     type: Number,
     required: true,
+  },
+  extraChargesApplied:{
+    type:Object,
+    
   },
   date: {
     type: Date,

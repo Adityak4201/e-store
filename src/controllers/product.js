@@ -122,12 +122,9 @@ exports.addProdToCart = async (req, res) => {
     const query = { username: req.user.username };
     const update = {
       $push: {
-        cart: {
-          product_id: product_id,
-          seller_username: product_details.username,
-          product_name: product_details.productname,
-          product_count: count,
-        },
+        cart: 
+          req.body
+        ,
       },
     };
     // const options = { upsert: true };
@@ -137,12 +134,9 @@ exports.addProdToCart = async (req, res) => {
       const user = await USERProfile({
         username: req.user.username,
         cart: [
-          {
-            product_id: product_id,
-            seller_username: product_details.username,
-            product_name: product_details.productname,
-            product_count: count,
-          },
+          
+            req.body,
+          ,
         ],
       }).save();
       console.log(user);
@@ -159,12 +153,7 @@ exports.addProdToCart = async (req, res) => {
       } else {
         const update = {
           $set: {
-            cart: {
-              product_id: product_id,
-              seller_username: product_details.username,
-              product_name: product_details.productname,
-              product_count: count,
-            },
+            cart: req.body,
           },
         };
         await USERProfile.updateOne(query, update);
