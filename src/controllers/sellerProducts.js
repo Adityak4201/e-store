@@ -82,6 +82,7 @@ exports.addProduct = async (req, res) => {
   const {
     productname,
     productmetadescription,
+    user_id,
     productdescription,
     price,
     sellprice,
@@ -95,6 +96,7 @@ exports.addProduct = async (req, res) => {
   const Item = Product({
     productname,
     username,
+    user_id,
     productmetadescription,
     productdescription,
     price,

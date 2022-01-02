@@ -45,7 +45,7 @@ const ShopProduct = Schema({
     required: true,
   },
   extraChargesApplied:{
-    type:Object,
+    type:Array,
     
   },
   date: {
